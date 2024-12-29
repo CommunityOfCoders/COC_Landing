@@ -6,7 +6,7 @@ import { Timeline } from "@/components/ui/timeline";
 export function AboutSection() {
   const timelineData = [
     {
-      title: "2024",
+      title: "2016",
       content: (
         <div>
           <motion.p 
@@ -15,7 +15,7 @@ export function AboutSection() {
             transition={{ duration: 0.5 }}
             className="text-neutral-200 text-sm md:text-base font-normal mb-8"
           >
-            Launched our state-of-the-art AI Research Lab and expanded our community to over 10,000 members globally.
+            Launch of the Community of Coders at VJTI - a dedicated coding club - By the seniors, for the Juniors.
           </motion.p>
           <div className="grid grid-cols-2 gap-4">
             <motion.div
