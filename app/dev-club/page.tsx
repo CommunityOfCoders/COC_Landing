@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import { SectionHero } from "@/components/sections/SectionHero";
 import { FeaturesSectionDemo } from "@/components/sections/EventsSection";
 import { Suspense } from "react";
+import { ImagesSliderDemo } from "@/components/ImageSlider";
 
 export default function DevClubPage() {
   const badges = [
@@ -24,6 +25,7 @@ export default function DevClubPage() {
           badges={badges}
         />
         <FeaturesSectionDemo />
+        <ImagesSliderDemo />
         {/* Other sections will go here */}
       </main>
     </Suspense>

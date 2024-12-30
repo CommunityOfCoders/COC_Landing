@@ -1,30 +1,61 @@
 "use client";
 
-// import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { domains } from "@/config/navigation";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ResourceTable from "@/components/ResourceTable";
+import { useEffect, useState } from "react";
+import { getDomainBySlug, getSubjectsByDomain, type Domain } from "@/lib/supabase-resources";
+import { Code, Database, FileText, Video } from "lucide-react";
 
-interface Domain {
-    name: string;
-    resources: string;
-    icon: React.ComponentType;
-    gradient: string;
-    description: string;
-    categories: string[];
-  }
+const domainIcons: { [key: string]: any } = {
+  'web-development': Code,
+  'machine-learning': Database,
+  'mobile-development': FileText,
+  'cloud-computing': Video,
+};
 
 export default function DomainPage() {
-//   const { data: session } = useSession();
   const params = useParams();
-  const currentDomain = domains.find(
-    (d: Domain) => d.resources === params.domain
-  );
+  const [domain, setDomain] = useState<Domain | null>(null);
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!currentDomain) return null;
+  useEffect(() => {
+    const fetchDomainData = async () => {
+      try {
+        setLoading(true);
+        const domainSlug = params.domain as string;
+        const [domainData, subjectsData] = await Promise.all([
+          getDomainBySlug(domainSlug),
+          getSubjectsByDomain(domainSlug)
+        ]);
+        setDomain(domainData);
+        setSubjects(subjectsData);
+      } catch (error) {
+        console.error('Error fetching domain data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.domain) {
+      fetchDomainData();
+    }
+  }, [params.domain]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (!domain) return null;
+
+  const DomainIcon = domainIcons[domain.slug] || Code;
 
   return (
     <div className="min-h-screen bg-black px-8 py-6">
@@ -36,10 +67,10 @@ export default function DomainPage() {
         {/* Welcome Section */}
         <div className="space-y-3">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 bg-clip-text text-transparent">
-            {currentDomain.name}
+            {domain.name}
           </h1>
           <p className="text-lg text-neutral-400">
-            Browse through {currentDomain.name.toLowerCase()} resources curated for VJTI students.
+            Browse through {domain.name.toLowerCase()} resources curated for VJTI students.
           </p>
         </div>
 
@@ -47,15 +78,15 @@ export default function DomainPage() {
         <Card className="bg-neutral-900/50 backdrop-blur-sm border-neutral-800">
           <div className="p-8 border-b border-neutral-800">
             <div className="flex items-center gap-4">
-              <div className={`p-3 rounded-lg bg-gradient-to-br ${currentDomain.gradient} bg-opacity-10`}>
-                <currentDomain.icon className="w-6 h-6 text-white" />
+              <div className="p-3 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 bg-opacity-10">
+                <DomainIcon className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h2 className="text-2xl font-semibold text-neutral-100">
                   Resources
                 </h2>
                 <p className="text-sm text-neutral-400 mt-1">
-                  {currentDomain.description}
+                  {domain.description}
                 </p>
               </div>
             </div>
@@ -63,18 +94,18 @@ export default function DomainPage() {
           
           <ScrollArea className="h-[calc(100vh-16rem)]">
             <div className="space-y-8 p-8">
-              {currentDomain.categories.map((category: string) => (
-                <div key={category} className="space-y-4">
+              {subjects.map((subject) => (
+                <div key={subject.id} className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
                     <h2 className="text-lg font-medium text-neutral-200">
-                      {category}
+                      {subject.name}
                     </h2>
                   </div>
                   <Card className="border-neutral-800/50 bg-neutral-900/30">
                     <ResourceTable 
-                      category={category} 
-                      domain={currentDomain.resources} 
+                      subjectId={subject.id}
+                      domain={domain.slug}
                     />
                   </Card>
                 </div>
@@ -85,4 +116,4 @@ export default function DomainPage() {
       </motion.div>
     </div>
   );
-} 
+}

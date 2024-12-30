@@ -4,21 +4,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
-
-interface Resource {
-  name: string;
-  type: string;
-  link: string;
-  description: string;
-  tags: string[];
-}
+import { getResourcesBySubject, type Resource } from "@/lib/supabase-resources";
 
 interface ResourceTableProps {
-  category: string;
+  subjectId: string;
   domain: string;
 }
 
-export default function ResourceTable({ category, domain }: ResourceTableProps) {
+export default function ResourceTable({ subjectId, domain }: ResourceTableProps) {
   const [resources, setResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,15 +20,8 @@ export default function ResourceTable({ category, domain }: ResourceTableProps) 
     const fetchResources = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/resources/${domain}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch resources');
-        }
-        const data = await response.json();
-        
-        // Get resources for the specific category from the nested structure
-        const categoryResources = data[category] || [];
-        setResources(categoryResources);
+        const resourcesData = await getResourcesBySubject(subjectId);
+        setResources(resourcesData);
       } catch (err) {
         console.error('Error:', err);
         setError('Failed to load resources');
@@ -45,7 +31,7 @@ export default function ResourceTable({ category, domain }: ResourceTableProps) 
     };
 
     fetchResources();
-  }, [category, domain]);
+  }, [subjectId]);
 
   if (isLoading) return <div className="p-8 text-center text-neutral-400">Loading resources...</div>;
   if (error) return <div className="p-8 text-center text-red-400">{error}</div>;
@@ -62,9 +48,9 @@ export default function ResourceTable({ category, domain }: ResourceTableProps) 
         </TableRow>
       </TableHeader>
       <TableBody>
-        {resources.map((resource, index) => (
+        {resources.map((resource) => (
           <TableRow 
-            key={`${resource.name}-${index}`}
+            key={resource.id}
             className="border-neutral-800/50 hover:bg-neutral-800/50 transition-colors"
           >
             <TableCell className="font-medium text-neutral-200">
@@ -75,7 +61,7 @@ export default function ResourceTable({ category, domain }: ResourceTableProps) 
             </TableCell>
             <TableCell>
               <div className="flex flex-wrap gap-2">
-                {resource.tags.map((tag) => (
+                {resource.tags?.map((tag) => (
                   <span
                     key={tag}
                     className="px-2 py-1 text-xs rounded-md bg-neutral-800/50 text-neutral-300 ring-1 ring-neutral-700/50"
@@ -90,7 +76,7 @@ export default function ResourceTable({ category, domain }: ResourceTableProps) 
                 variant="ghost"
                 size="sm"
                 className="text-blue-400 hover:bg-emerald-500/10 hover:text-emerald-400"
-                onClick={() => window.open(resource.link, '_blank')}
+                onClick={() => window.open(resource.url, '_blank')}
               >
                 <ExternalLink className="w-4 h-4" />
                 <span className="sr-only">Open link</span>
