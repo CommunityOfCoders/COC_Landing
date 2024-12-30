@@ -1,12 +1,12 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { getDomains, getSubjectsByDomain, getResourcesBySubject, type Domain, type Subject, type Resource } from "@/lib/supabase-resources";
-import Link from "next/link";
+// import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ import { BookOpen, Code, FileText, Video } from "lucide-react";
 
 export default function Dashboard() {
   const { data: session } = useSession();
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const [domains, setDomains] = useState<Domain[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);

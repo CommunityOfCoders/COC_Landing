@@ -6,10 +6,10 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ResourceTable from "@/components/ResourceTable";
 import { useEffect, useState } from "react";
-import { getDomainBySlug, getSubjectsByDomain, type Domain } from "@/lib/supabase-resources";
-import { Code, Database, FileText, Video } from "lucide-react";
+import { getDomainBySlug, getSubjectsByDomain, type Domain, type Subject } from "@/lib/supabase-resources";
+import { Code, Database, FileText, Video, LucideIcon } from "lucide-react";
 
-const domainIcons: { [key: string]: any } = {
+const domainIcons: { [key: string]: LucideIcon } = {
   'web-development': Code,
   'machine-learning': Database,
   'mobile-development': FileText,
@@ -19,7 +19,7 @@ const domainIcons: { [key: string]: any } = {
 export default function DomainPage() {
   const params = useParams();
   const [domain, setDomain] = useState<Domain | null>(null);
-  const [subjects, setSubjects] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -105,7 +105,6 @@ export default function DomainPage() {
                   <Card className="border-neutral-800/50 bg-neutral-900/30">
                     <ResourceTable 
                       subjectId={subject.id}
-                      domain={domain.slug}
                     />
                   </Card>
                 </div>

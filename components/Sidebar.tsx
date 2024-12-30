@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
+import { LucideIcon } from "lucide-react";
 
 const navLinks = [
   { name: 'Teams', href: '/teams', icon: Users },
@@ -34,7 +35,7 @@ const clubs = [
   { name: 'Proj X', href: '/proj-x', icon: Code2 },
 ];
 
-const domainIcons: { [key: string]: any } = {
+const domainIcons: { [key: string]: LucideIcon } = {
   'web-development': Code,
   'machine-learning': Database,
   'mobile-development': FileText,

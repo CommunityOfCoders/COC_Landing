@@ -8,10 +8,10 @@ import { getResourcesBySubject, type Resource } from "@/lib/supabase-resources";
 
 interface ResourceTableProps {
   subjectId: string;
-  domain: string;
+  domain?: string;
 }
 
-export default function ResourceTable({ subjectId, domain }: ResourceTableProps) {
+export default function ResourceTable({ subjectId }: ResourceTableProps) {
   const [resources, setResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
