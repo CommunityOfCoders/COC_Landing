@@ -17,6 +17,54 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+      keyframes: {
+        orbit: {
+          '0%': {
+            transform: 'rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg)'
+          },
+          '100%': {
+            transform: 'rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg)'
+          }
+        },
+        meteor: {
+          '0%': {
+            transform: 'rotate(215deg) translateX(0)',
+            opacity: '1'
+          },
+          '70%': {
+            opacity: '1'
+          },
+          '100%': {
+            transform: 'rotate(215deg) translateX(-500px)',
+            opacity: '0'
+          }
+        },
+        shine: {
+          "to": {
+            "backgroundPosition": "200% center"
+          }
+        },
+        underline: {
+          '0%': {
+            'width': '0%',
+            'left': '0'
+          },
+          '50%': {
+            'width': '100%',
+            'left': '0'
+          },
+          '100%': {
+            'width': '0%',
+            'left': '100%'
+          }
+        }
+      },
+      animation: {
+        orbit: 'orbit calc(var(--duration)*1s) linear infinite',
+        meteor: 'meteor 5s linear infinite',
+        shine: "shine 8s ease infinite",
+        underline: "underline 6s cubic-bezier(0.4, 0, 0.2, 1) infinite"
+      },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -92,33 +140,6 @@ const config: Config = {
   				'sans-serif'
   			]
   		},
-  		animation: {
-  			orbit: 'orbit calc(var(--duration)*1s) linear infinite',
-  			meteor: 'meteor 5s linear infinite'
-  		},
-  		keyframes: {
-  			orbit: {
-  				'0%': {
-  					transform: 'rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg)'
-  				},
-  				'100%': {
-  					transform: 'rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg)'
-  				}
-  			},
-  			meteor: {
-  				'0%': {
-  					transform: 'rotate(215deg) translateX(0)',
-  					opacity: '1'
-  				},
-  				'70%': {
-  					opacity: '1'
-  				},
-  				'100%': {
-  					transform: 'rotate(215deg) translateX(-500px)',
-  					opacity: '0'
-  				}
-  			}
-  		}
   	}
   },
   
