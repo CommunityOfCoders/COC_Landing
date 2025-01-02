@@ -120,3 +120,16 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #22c55e20 #0a0a0a;
 }
+
+/* Hover effect for team member images */
+.team-member img:hover,
+.gallery img:hover {
+  transform: scale(1.1); /* Slightly enlarges the image */
+  transition: transform 0.3s ease; /* Smooth transition effect */
+}
+
+/* Ensure smooth scaling on hover */
+.team-member img,
+.gallery img {
+  transition: transform 0.3s ease; /* Smooth transition for all images */
+}

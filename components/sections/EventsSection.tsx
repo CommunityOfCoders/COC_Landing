@@ -41,29 +41,29 @@ interface Event {
 let developerEvents = [
   {
     name: "Hackathon",
-    description: "48-hour coding challenge",
-    time: "Coming Soon",
+    description: "24-hour coding challenge",
+    time: "",
     icon: "🚀",
     color: "#4285F4", // Google Blue
   },
   {
-    name: "Workshop",
+    name: "Workshops",
     description: "Learn new technologies",
-    time: "Every Weekend",
+    time: "",
     icon: "💻",
     color: "#0F9D58", // Google Green
   },
   {
     name: "Tech Talks",
     description: "Industry expert sessions",
-    time: "Monthly",
+    time: "",
     icon: "🎯",
     color: "#DB4437", // Google Red
   },
   {
     name: "Project Showcase",
     description: "Show your builds",
-    time: "Quarterly",
+    time: "",
     icon: "✨",
     color: "#F4B400", // Google Yellow
   },
@@ -94,7 +94,7 @@ const EventCard = ({ name, description, icon, color, time }: Event) => {
         <div className="flex flex-col overflow-hidden">
           <figcaption className="flex flex-row items-center whitespace-pre text-lg font-medium text-white">
             <span className="text-sm sm:text-lg">{name}</span>
-            <span className="mx-1">·</span>
+            {/* <span className="mx-1">·</span> */}
             <span className="text-xs text-gray-400">{time}</span>
           </figcaption>
           <p className="text-sm font-normal text-white/60">
@@ -138,28 +138,28 @@ export function FeaturesSectionDemo() {
       className: "col-span-12 lg:col-span-4 row-span-2 min-h-[500px]",
       showAnimatedList: true 
     },
-    { 
-      id: 3, 
-      className: "col-span-12 lg:col-span-4 min-h-[240px]", 
-      keyword: "Team",
-      subheading: "Join Our Community" 
-    },
-    { 
-      id: 4, 
-      className: "col-span-12 lg:col-span-4 min-h-[240px]", 
-      keyword: "Dev",
-      subheading: "Build Together" 
-    },
-    { 
-      id: 5, 
-      className: "col-span-12 lg:col-span-4 min-h-[240px]", 
-      keyword: "Events",
-      subheading: "Learn & Grow" 
-    },
+  ];
+  // { 
+    //   id: 3, 
+    //   className: "col-span-12 lg:col-span-4 min-h-[240px]", 
+    //   keyword: "Team",
+    //   subheading: "Join Our Community" 
+    // },
+    // { 
+    //   id: 4, 
+    //   className: "col-span-12 lg:col-span-4 min-h-[240px]", 
+    //   keyword: "Dev",
+    //   subheading: "Build Together" 
+    // },
+    // { 
+    //   id: 5, 
+    //   className: "col-span-12 lg:col-span-4 min-h-[240px]", 
+    //   keyword: "Events",
+    //   subheading: "Learn & Grow" 
+    // },
     // { id: 6, className: "col-span-12 lg:col-span-6 min-h-[300px]", showEvents: true },
     // { id: 7, className: "col-span-12 lg:col-span-3 min-h-[300px]" },
     // { id: 8, className: "col-span-12 lg:col-span-3 min-h-[300px]" },
-  ];
 
   return (
     <section className="py-24 bg-neutral-950/0 relative overflow-hidden">
@@ -169,9 +169,9 @@ export function FeaturesSectionDemo() {
         <h2 className="text-6xl font-bold bg-gradient-to-b from-green-700 to-green-300 bg-clip-text text-transparent  mb-4">
           WHAT WE DO
         </h2>
-        <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+        {/* <p className="text-xl text-gray-400 max-w-2xl mx-auto">
           Empowering students with technology through workshops, hackathons, and collaborative projects
-        </p>
+        </p> */}
       </div>
 
       <div className="max-w-7xl mx-auto px-4">

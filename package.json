@@ -44,6 +44,10 @@
     "posthog-js": "^1.203.2",
     "react": "^18",
     "react-dom": "^18",
+    "react-icons": "^5.4.0",
+    "react-slick": "^0.30.3",
+    "slick-carousel": "^1.8.1",
+    "swiper": "^11.1.15",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.171.0"
