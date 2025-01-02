@@ -14,7 +14,7 @@ const teamMembers = [
   {
     name: "Manas Bhavaskar",
     role: "Developer",
-    img: "/images/manas.jpg",
+    img: "dev_team_manas.jpg",
     link: "https://www.linkedin.com/in/manas-bavaskar",
   },
   {
