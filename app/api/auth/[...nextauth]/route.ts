@@ -1,20 +1,32 @@
-import { type NextRequest } from 'next/server';
-import { Auth, type AuthConfig } from '@auth/core';
-import Google from '@auth/core/providers/google';
+// In app/api/auth/[...nextauth]/route.ts
+import NextAuth, { AuthOptions } from "next-auth"
+import GoogleProvider from "next-auth/providers/google"
+import auth from "@/app/actions/auth/auth";
 
-export const runtime = 'edge';
-
-const config: AuthConfig = {
+export const authOptions: AuthOptions = {
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
+  pages: {
+    signIn: "/signin",
+  },
   callbacks: {
     async signIn({ account, profile }) {
+      // Check if signing in with Google and email ends with .vjti.ac.in
       if (account?.provider === "google" && profile?.email) {
-        return profile.email.endsWith('.vjti.ac.in');
+        const isVjtiEmail = profile.email.endsWith('.vjti.ac.in');
+        if(isVjtiEmail){
+          const res = await auth(profile);
+          if(res.status === 'ok'){
+            return true;
+          } else {
+            console.log("Auth function returned not ok");
+            return false;
+          }
+        }
       }
       return false;
     },
@@ -23,18 +35,16 @@ const config: AuthConfig = {
       else if (url.startsWith("/")) return new URL(url, baseUrl).toString();
       return baseUrl + "/dashboard";
     },
-  },
-  pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
+    async session({ session, token }) {
+      // Add user id to session
+      if (session?.user && token?.sub) {
+        session.user.id = token.sub;
+      }
+      return session;
+    }
   },
   secret: process.env.NEXTAUTH_SECRET,
-};
-
-export async function GET(request: NextRequest) {
-  return await Auth(request, config);
 }
 
-export async function POST(request: NextRequest) {
-  return await Auth(request, config);
-} 
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
