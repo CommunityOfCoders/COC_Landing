@@ -1,8 +1,7 @@
 "use client";
 
-// Probablky make this and resource table a combined server component 
-
 import React from "react";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { domains } from "@/config/navigation";
 import { motion } from "framer-motion";
@@ -22,7 +21,7 @@ interface Domain {
 export const runtime = 'edge';
 
 export default function DomainPage() {
-  //   const { data: session } = useSession();
+  const { data: session } = useSession();
   const params = useParams();
   const currentDomain = domains.find(
     (d: Domain) => d.resources === params.domain
