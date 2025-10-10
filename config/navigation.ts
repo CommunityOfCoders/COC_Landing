@@ -21,7 +21,7 @@ export const domains = [
     resources: "dsa-cp",
     icon: Book,
     description: "DSA, Algorithms, and Contest Preparation",
-    categories: ["DSA", "Algorithms", "Contest Prep", "Practice"],
+    categories: ["DSA", "CP"],
     gradient: "from-orange-500 to-red-500",
   },
   {

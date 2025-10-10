@@ -543,7 +543,123 @@
       }
     ]
   },
-  "dsa-cp": {},
+  "dsa-cp": {
+    "DSA": [
+      {
+        "name": "Striver A2Z DSA Sheet",
+        "description": "Must do sheet for building strong fundamentals and Interviews",
+        "tags": [
+          "DSA",
+          "Striver"
+        ],
+        "link": "https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/"
+      },
+      {
+        "name": "LeetCode",
+        "description": "Most used platform for practicing DSA questions. Has contests as well.",
+        "tags": [
+          "DSA"
+        ],
+        "link": "https://leetcode.com/problemset/"
+      },
+      {
+        "name": "NeetCode Roadmap",
+        "description": "Structured roadmap for mastering DSA and system design.",
+        "tags": [
+          "DSA",
+          "NeetCode"
+        ],
+        "link": "https://neetcode.io/"
+      },
+      {
+        "name": "Love Babbar DSA Sheet",
+        "description": "Another popular problem-solving sheet for DSA and interviews.",
+        "tags": [
+          "DSA",
+          "Babbar"
+        ],
+        "link": "https://codolio.com/question-tracker/sheet/love-babbar-sheet"
+      },
+      {
+        "name": "GeeksForGeeks DSA",
+        "description": "Comprehensive resource for learning Data Structures and Algorithms from basics to advanced. Solutions of most questions are available here.",
+        "tags": [
+          "DSA",
+          "GFG"
+        ],
+        "link": "https://www.geeksforgeeks.org/dsa/dsa/"
+      },
+      {
+        "name": "HackerRank",
+        "description": "Beginner-friendly platform for practicing coding and basic DSA problems.",
+        "tags": [
+          "DSA",
+          "Practice"
+        ],
+        "link": "https://www.hackerrank.com/"
+      },
+      {
+        "name": "CLRS Textbook",
+        "description": "Reference book for theory and further reading.",
+        "tags": [
+          "DSA",
+          "Theory",
+          "Textbook"
+        ],
+        "link": "https://www.cs.mcgill.ca/~akroit/math/compsci/Cormen%2520Introduction%2520to%2520Algorithms.pdf"
+      }
+    ],
+    "CP": [
+      {
+        "name": "Codeforces",
+        "description": "Website to give contests/ practice problems",
+        "tags": [
+          "CP",
+          "Contests",
+          "Practice"
+        ],
+        "link": "https://codeforces.com/"
+      },
+      {
+        "name": "CodeChef",
+        "description": "Website to give contests/ practice problems",
+        "tags": [
+          "CP",
+          "Contests",
+          "Practice"
+        ],
+        "link": "https://www.codechef.com/contests"
+      },
+      {
+        "name": "AtCoder",
+        "description": "Website to give contests/ practice problems",
+        "tags": [
+          "CP",
+          "Contests",
+          "Practice"
+        ],
+        "link": "https://atcoder.jp/"
+      },
+      {
+        "name": "CSES",
+        "description": "Website to practice problems",
+        "tags": [
+          "CP",
+          "Practice"
+        ],
+        "link": "https://cses.fi/problemset/"
+      },
+      {
+        "name": "YouTube Playlist",
+        "description": "CP Playlist",
+        "tags": [
+          "CP",
+          "YouTube"
+        ],
+        "link": "https://www.youtube.com/playlist?list=PLauivoElc3ggagradg8MfOZreCMmXMmJ-"
+      }
+    ]
+  },
   "blockchain": {
     "Basics": [
       {
