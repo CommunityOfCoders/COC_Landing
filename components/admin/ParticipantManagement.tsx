@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,8 @@ import {
   Eye,
   Edit,
   Save,
-  X
+  X,
+  Loader2
 } from "lucide-react";
 import { EventWithStats, Participant } from "@/types/events";
 
@@ -30,50 +31,9 @@ interface ParticipantManagementProps {
   events: EventWithStats[];
 }
 
-// Mock participants data
-const mockParticipants: Participant[] = [
-    {
-        id: "1",
-        eventId: "1",
-        name: "John Doe",
-        email: "john.doe@vjti.ac.in",
-        phone: "+91 9876543210",
-        college: "VJTI",
-        year: "Third Year",
-        branch: "Computer Engineering",
-        registeredAt: "2024-01-10T10:00:00Z",
-        status: "confirmed"
-    },
-    {
-        id: "2",
-        eventId: "1",
-        name: "Jane Smith",
-        email: "jane.smith@vjti.ac.in",
-        phone: "+91 9876543211",
-        college: "VJTI",
-        year: "Final Year",
-        branch: "Information Technology",
-        registeredAt: "2024-01-11T14:30:00Z",
-        status: "registered"
-    },
-    {
-        id: "3",
-        eventId: "2",
-        name: "Bob Wilson",
-        email: "bob.wilson@vjti.ac.in",
-        phone: "+91 9876543212",
-        college: "VJTI",
-        year: "Second Year",
-        branch: "Electronics Engineering",
-        registeredAt: "2024-01-12T09:15:00Z",
-        status: "confirmed",
-        teamName: "Crypto Innovators",
-        teamMembers: ["Alice Cooper", "Charlie Brown"]
-    }
-];
-
 export default function ParticipantManagement({ events }: ParticipantManagementProps) {
-  const [participants, setParticipants] = useState<Participant[]>(mockParticipants);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -81,6 +41,43 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [editFormData, setEditFormData] = useState<Participant | null>(null);
+
+  // Fetch participants from API
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/participants');
+        if (!response.ok) throw new Error('Failed to fetch participants');
+        const data = await response.json();
+        
+        // Transform API data to match Participant interface
+        const transformedData = data.participants.map((p: any) => ({
+          id: p.id,
+          eventId: p.event_id,
+          name: p.users?.name || p.user_id,
+          email: p.users?.email || '',
+          phone: p.users?.phone || '',
+          college: 'VJTI',
+          year: p.users?.year || '',
+          branch: p.users?.branch || '',
+          registeredAt: p.created_at,
+          status: p.status,
+          teamName: p.team_name,
+          teamMembers: p.team_members || [],
+          isTeamLeader: p.is_team_leader
+        }));
+        
+        setParticipants(transformedData);
+      } catch (error) {
+        console.error('Error fetching participants:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParticipants();
+  }, []);
 
   const filteredParticipants = useMemo(() => {
     return participants.filter(participant => {
@@ -154,13 +151,29 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
     setEditModalOpen(true);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editFormData) {
-      setParticipants(prev => prev.map(p => 
-        p.id === editFormData.id ? editFormData : p
-      ));
-      setEditModalOpen(false);
-      setEditFormData(null);
+      try {
+        const response = await fetch(`/api/participants/${editFormData.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: editFormData.status,
+            team_name: editFormData.teamName
+          })
+        });
+
+        if (!response.ok) throw new Error('Failed to update participant');
+
+        setParticipants(prev => prev.map(p => 
+          p.id === editFormData.id ? editFormData : p
+        ));
+        setEditModalOpen(false);
+        setEditFormData(null);
+      } catch (error) {
+        console.error('Error updating participant:', error);
+        alert('Failed to update participant');
+      }
     }
   };
 
@@ -278,7 +291,12 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {filteredParticipants.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-16 h-16 mx-auto mb-4 text-neutral-600 animate-spin" />
+              <h3 className="text-lg font-medium text-neutral-300 mb-2">Loading participants...</h3>
+            </div>
+          ) : filteredParticipants.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>

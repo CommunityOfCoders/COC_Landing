@@ -14,6 +14,9 @@ export interface Event {
   requirements?: string[];
   createdAt: string;
   updatedAt: string;
+  teamEvent?: boolean;
+  maxTeamSize?: number;
+  minTeamSize?: number;
 }
 
 export interface Participant {
@@ -45,6 +48,9 @@ export interface EventFormData {
   tags: string[];
   requirements: string[];
   imageUrl?: string;
+  teamEvent?: boolean;
+  maxTeamSize?: number;
+  minTeamSize?: number;
 }
 
 export interface ParticipantStats {
