@@ -35,7 +35,7 @@ const teamMembers: TeamMember[] = [
   { name: "Mohnish Pathak", role: "Workshop Coordinator", cf: "Pupil", cf_link: "https://codeforces.com/profile/BoredAF1", linkedin: "https://www.linkedin.com/in/mohnish-p-027261281/" },
   { name: "Kartik Lande", role: "Core Member", cf: "Pupil", cf_link: "https://codeforces.com/profile/kartik70", linkedin: "https://www.linkedin.com/in/kartik-lande/" },
   { name: "Santrupt Potphode", role: "Core Member", cf: "Pupil", cf_link: "https://codeforces.com/profile/santrupt_29", linkedin: "https://www.linkedin.com/in/santrupt29/" },
-  { name: "Ronit Choube", role: "Core Member", cf: "Pupil", cf_link: "https://codeforces.com/profile/RAIDxVIPER", linkedin: "https://www.linkedin.com/in/ronit-choube-a10a72286/" },
+  { name: "Ronit Choube", role: "Core Member", cf: "Newbie", cf_link: "https://codeforces.com/profile/RAIDxVIPER", linkedin: "https://www.linkedin.com/in/ronit-choube-a10a72286/" },
   { name: "Raj Kharkwal", role: "Core Member", cf: "Specialist", cf_link: "https://codeforces.com/profile/Ayanokojii", linkedin: "https://www.linkedin.com/in/raj-kharkwal-6097b9283/" },
 ];
 
