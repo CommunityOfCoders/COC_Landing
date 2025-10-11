@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,58 +22,19 @@ import {
   Eye,
   Edit,
   Save,
-  X
+  X,
+  Loader2
 } from "lucide-react";
 import { EventWithStats, Participant } from "@/types/events";
+import { getParticipants, updateParticipantStatus } from "@/app/actions/participants";
 
 interface ParticipantManagementProps {
   events: EventWithStats[];
 }
 
-// Mock participants data
-const mockParticipants: Participant[] = [
-    {
-        id: "1",
-        eventId: "1",
-        name: "John Doe",
-        email: "john.doe@vjti.ac.in",
-        phone: "+91 9876543210",
-        college: "VJTI",
-        year: "Third Year",
-        branch: "Computer Engineering",
-        registeredAt: "2024-01-10T10:00:00Z",
-        status: "confirmed"
-    },
-    {
-        id: "2",
-        eventId: "1",
-        name: "Jane Smith",
-        email: "jane.smith@vjti.ac.in",
-        phone: "+91 9876543211",
-        college: "VJTI",
-        year: "Final Year",
-        branch: "Information Technology",
-        registeredAt: "2024-01-11T14:30:00Z",
-        status: "registered"
-    },
-    {
-        id: "3",
-        eventId: "2",
-        name: "Bob Wilson",
-        email: "bob.wilson@vjti.ac.in",
-        phone: "+91 9876543212",
-        college: "VJTI",
-        year: "Second Year",
-        branch: "Electronics Engineering",
-        registeredAt: "2024-01-12T09:15:00Z",
-        status: "confirmed",
-        teamName: "Crypto Innovators",
-        teamMembers: ["Alice Cooper", "Charlie Brown"]
-    }
-];
-
 export default function ParticipantManagement({ events }: ParticipantManagementProps) {
-  const [participants, setParticipants] = useState<Participant[]>(mockParticipants);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -81,6 +42,80 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<Participant | null>(null);
   const [editFormData, setEditFormData] = useState<Participant | null>(null);
+
+  // Fetch participants from API
+  useEffect(() => {
+    const fetchParticipantsData = async () => {
+      try {
+        setLoading(true);
+        const result = await getParticipants();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to fetch participants');
+        }
+        
+        console.log('Fetched participants:', result.data);
+        
+        // Transform API data to match Participant interface
+        const transformedData = result.data.map((p: any) => {
+          const userData = p.users || {};
+          
+          // Parse team_members if it's a string or contains stringified objects
+          let parsedTeamMembers: any[] = [];
+          if (p.team_members) {
+            if (typeof p.team_members === 'string') {
+              try {
+                parsedTeamMembers = JSON.parse(p.team_members);
+              } catch (e) {
+                console.error("Failed to parse team_members:", e);
+                parsedTeamMembers = [];
+              }
+            } else if (Array.isArray(p.team_members)) {
+              parsedTeamMembers = p.team_members.map((m: any) => {
+                if (typeof m === 'string') {
+                  try {
+                    return JSON.parse(m);
+                  } catch (e) {
+                    return { email: m, name: '' };
+                  }
+                }
+                return m;
+              });
+            }
+          }
+          
+          return {
+            id: p.id,
+            eventId: p.event_id,
+            name: userData.name || 'Unknown',
+            email: userData.email || '',
+            phone: userData.phone || '',
+            college: 'VJTI',
+            year: userData.year?.toString() || '',
+            branch: userData.branch || '',
+            registeredAt: p.created_at,
+            status: p.status || 'registered',
+            teamName: p.team_name || undefined,
+            teamMembers: parsedTeamMembers.map((m: any) => m.email || m),
+            isTeamLeader: p.is_team_leader || false,
+            skills: [],
+            experience: undefined,
+            motivation: undefined
+          };
+        });
+        
+        console.log('Transformed participants:', transformedData);
+        setParticipants(transformedData);
+      } catch (error) {
+        console.error('Error fetching participants:', error);
+        alert('Failed to load participants. Check console for details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParticipantsData();
+  }, []);
 
   const filteredParticipants = useMemo(() => {
     return participants.filter(participant => {
@@ -131,10 +166,11 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
 
   const exportParticipants = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
-      "Name,Email,Phone,College,Year,Branch,Event,Status,Registered At\n" +
-      filteredParticipants.map(p => 
-        `"${p.name}","${p.email}","${p.phone}","${p.college}","${p.year}","${p.branch}","${getEventTitle(p.eventId)}","${p.status}","${new Date(p.registeredAt).toLocaleDateString()}"`
-      ).join("\n");
+      "Name,Email,Phone,College,Year,Branch,Event,Team Name,Is Team Leader,Team Members,Status,Registered At\n" +
+      filteredParticipants.map(p => {
+        const teamMembers = p.teamMembers ? p.teamMembers.join('; ') : '';
+        return `"${p.name}","${p.email}","${p.phone || ''}","${p.college}","${p.year}","${p.branch}","${getEventTitle(p.eventId)}","${p.teamName || ''}","${p.isTeamLeader ? 'Yes' : 'No'}","${teamMembers}","${p.status}","${new Date(p.registeredAt).toLocaleDateString()}"`;
+      }).join("\n");
     
     const link = document.createElement("a");
     link.setAttribute("href", encodeURI(csvContent));
@@ -154,13 +190,27 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
     setEditModalOpen(true);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editFormData) {
-      setParticipants(prev => prev.map(p => 
-        p.id === editFormData.id ? editFormData : p
-      ));
-      setEditModalOpen(false);
-      setEditFormData(null);
+      try {
+        const result = await updateParticipantStatus(editFormData.id, {
+          status: editFormData.status,
+          team_name: editFormData.teamName
+        });
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to update participant');
+        }
+
+        setParticipants(prev => prev.map(p => 
+          p.id === editFormData.id ? editFormData : p
+        ));
+        setEditModalOpen(false);
+        setEditFormData(null);
+      } catch (error) {
+        console.error('Error updating participant:', error);
+        alert('Failed to update participant');
+      }
     }
   };
 
@@ -278,7 +328,12 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {filteredParticipants.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-16 h-16 mx-auto mb-4 text-neutral-600 animate-spin" />
+              <h3 className="text-lg font-medium text-neutral-300 mb-2">Loading participants...</h3>
+            </div>
+          ) : filteredParticipants.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -297,9 +352,23 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
                     <TableRow key={participant.id} className="border-neutral-800/50 hover:bg-neutral-800/30">
                       <TableCell>
                         <div>
-                          <p className="font-medium text-neutral-200">{participant.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-neutral-200">{participant.name}</p>
+                            {participant.isTeamLeader && (
+                              <Badge className="text-xs bg-amber-500/20 text-amber-400 border-amber-500/30">
+                                Leader
+                              </Badge>
+                            )}
+                          </div>
                           {participant.teamName && (
-                            <p className="text-xs text-neutral-400">Team: {participant.teamName}</p>
+                            <div className="mt-1">
+                              <p className="text-xs text-neutral-400">Team: {participant.teamName}</p>
+                              {participant.teamMembers && participant.teamMembers.length > 0 && (
+                                <p className="text-xs text-neutral-500">
+                                  {participant.teamMembers.length} member{participant.teamMembers.length !== 1 ? 's' : ''}
+                                </p>
+                              )}
+                            </div>
                           )}
                           {participant.skills && participant.skills.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-1">
@@ -446,12 +515,28 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
               )}
               
               {selectedParticipant.teamName && (
-                <div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-400">Team Information</label>
-                  <p className="text-neutral-200">Team: {selectedParticipant.teamName}</p>
-                  {selectedParticipant.teamMembers && (
-                    <p className="text-neutral-400 text-sm">Members: {selectedParticipant.teamMembers.join(', ')}</p>
-                  )}
+                  <div className="p-3 bg-neutral-800/50 rounded-lg space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-neutral-200 font-medium">Team: {selectedParticipant.teamName}</p>
+                      {selectedParticipant.isTeamLeader && (
+                        <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                          Team Leader
+                        </Badge>
+                      )}
+                    </div>
+                    {selectedParticipant.teamMembers && selectedParticipant.teamMembers.length > 0 && (
+                      <div>
+                        <p className="text-neutral-400 text-sm mb-1">Team Members:</p>
+                        <div className="space-y-1">
+                          {selectedParticipant.teamMembers.map((member: string, idx: number) => (
+                            <p key={idx} className="text-neutral-300 text-sm pl-2">• {member}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               

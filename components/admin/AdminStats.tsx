@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, TrendingUp, AlertCircle } from "lucide-react";
 import { EventWithStats } from "@/types/events";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface AdminStatsProps {
   events: EventWithStats[];
@@ -11,7 +13,7 @@ interface AdminStatsProps {
 
 export default function AdminStats({ events }: AdminStatsProps) {
   const totalEvents = events.length;
-  const activeEvents = events.filter(e => e.registrationStatus === 'open').length;
+  const activeEvents = events.filter(e => e.registrationstatus === 'open').length;
   const totalParticipants = events.reduce((sum, event) => sum + event.participantCount, 0);
   const upcomingEvents = events.filter(e => new Date(e.date) > new Date()).length;
 
@@ -99,18 +101,37 @@ export default function AdminStats({ events }: AdminStatsProps) {
                   <div key={event.id} className="flex items-center justify-between p-4 rounded-lg bg-neutral-800/30 hover:bg-neutral-800/50 transition-colors">
                     <div className="flex-1">
                       <h4 className="font-medium text-neutral-200">{event.title}</h4>
-                      <p className="text-sm text-neutral-400 mt-1">{event.description}</p>
+                      <div className="prose prose-invert prose-sm max-w-none text-neutral-400 mt-1 line-clamp-2 overflow-hidden">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            h1: ({ node, ...props }) => <h1 className="text-base font-semibold text-neutral-300 mt-1 mb-0.5" {...props} />,
+                            h2: ({ node, ...props }) => <h2 className="text-sm font-semibold text-neutral-300 mt-1 mb-0.5" {...props} />,
+                            h3: ({ node, ...props }) => <h3 className="text-sm font-medium text-neutral-300 mt-1 mb-0.5" {...props} />,
+                            p: ({ node, ...props }) => <p className="text-sm text-neutral-400 mb-0" {...props} />,
+                            ul: ({ node, ...props }) => <ul className="list-disc list-inside text-neutral-400 space-y-0 mb-0" {...props} />,
+                            ol: ({ node, ...props }) => <ol className="list-decimal list-inside text-neutral-400 space-y-0 mb-0" {...props} />,
+                            li: ({ node, ...props }) => <li className="text-sm text-neutral-400" {...props} />,
+                            a: ({ node, ...props }) => <a className="text-emerald-400 hover:text-emerald-300 underline" {...props} />,
+                            code: ({ node, ...props }) => <code className="bg-neutral-800 px-1 py-0.5 rounded text-emerald-400 text-xs" {...props} />,
+                            strong: ({ node, ...props }) => <strong className="text-neutral-300 font-semibold" {...props} />,
+                            em: ({ node, ...props }) => <em className="text-neutral-300 italic" {...props} />,
+                          }}
+                        >
+                          {event.description}
+                        </ReactMarkdown>
+                      </div>
                       <div className="flex items-center space-x-4 mt-2 text-xs text-neutral-500">
                         <span>{new Date(event.date).toLocaleDateString()}</span>
                         <span>{event.location}</span>
                         <span className={`px-2 py-1 rounded-full ${
-                          event.registrationStatus === 'open' 
+                          event.registrationstatus === 'open' 
                             ? 'bg-emerald-500/20 text-emerald-300' 
-                            : event.registrationStatus === 'upcoming'
+                            : event.registrationstatus === 'upcoming'
                             ? 'bg-blue-500/20 text-blue-300'
                             : 'bg-gray-500/20 text-gray-300'
                         }`}>
-                          {event.registrationStatus}
+                          {event.registrationstatus}
                         </span>
                       </div>
                     </div>

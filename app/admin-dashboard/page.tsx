@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,89 +11,152 @@ import EventManagement from "@/components/admin/EventManagement";
 import ParticipantManagement from "@/components/admin/ParticipantManagement";
 import AdminStats from "@/components/admin/AdminStats";
 import { Event, EventWithStats } from "@/types/events";
+import { getEvents, createEvent, updateEvent, deleteEvent } from "@/app/actions/events";
+import { getCurrentUserProfile } from "@/app/actions/users";
 
-// Mock data - replace with actual API calls
-const mockEvents: EventWithStats[] = [
-  {
-    id: "1",
-    title: "AI Workshop Series",
-    description: "Hands-on workshop on implementing neural networks from scratch",
-    date: "2024-01-15",
-    time: "10:00",
-    location: "Virtual",
-    maxParticipants: 100,
-    registrationStatus: "open",
-    category: "workshop",
-    organizer: "AI Group",
-    tags: ["AI", "Machine Learning", "Neural Networks"],
-    requirements: ["Basic Python knowledge", "Laptop with Python installed"],
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-    participantCount: 45,
-    stats: {
-      total: 45,
-      confirmed: 42,
-      attended: 0,
-      cancelled: 3
-    }
-  },
-  {
-    id: "2",
-    title: "Blockchain Hackathon",
-    description: "48-hour hackathon focused on DeFi and Web3 solutions",
-    date: "2024-02-10",
-    time: "09:00",
-    location: "Innovation Hub",
-    maxParticipants: 80,
-    registrationStatus: "upcoming",
-    category: "hackathon",
-    organizer: "ETH Club",
-    tags: ["Blockchain", "Web3", "DeFi"],
-    requirements: ["Team of 2-4 members", "Basic blockchain knowledge"],
-    createdAt: "2024-01-05T00:00:00Z",
-    updatedAt: "2024-01-10T00:00:00Z",
-    participantCount: 32,
-    stats: {
-      total: 32,
-      confirmed: 30,
-      attended: 0,
-      cancelled: 2
-    }
-  }
-];
+interface UserProfile {
+  name: string;
+  email: string;
+  picture: string;
+  branch?: string;
+  year?: number;
+  is_admin: number;
+}
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [events, setEvents] = useState<EventWithStats[]>(mockEvents);
+  const [events, setEvents] = useState<EventWithStats[]>([]);
   const [activeTab, setActiveTab] = useState("overview");
+  const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
-  const handleCreateEvent = (eventData: Event) => {
-    const newEvent: EventWithStats = {
-      ...eventData,
-      id: Math.random().toString(36).substr(2, 9),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      participantCount: 0,
-      stats: {
-        total: 0,
-        confirmed: 0,
-        attended: 0,
-        cancelled: 0
+  // Fetch events and user profile from API
+  useEffect(() => {
+    fetchEventsData();
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const result = await getCurrentUserProfile();
+      
+      if (result.success && result.data) {
+        setUserProfile(result.data as UserProfile);
       }
-    };
-    setEvents(prev => [newEvent, ...prev]);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
   };
 
-  const handleUpdateEvent = (eventId: string, updates: Partial<Event>) => {
-    setEvents(prev => prev.map(event => 
-      event.id === eventId 
-        ? { ...event, ...updates, updatedAt: new Date().toISOString() }
-        : event
-    ));
+  const fetchEventsData = async () => {
+    try {
+      setLoading(true);
+      const result = await getEvents();
+      
+      if (result.success) {
+        // Transform the data to match EventWithStats interface
+        const transformedEvents = result.data.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          description: event.description,
+          date: event.date || event.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+          time: event.time,
+          location: event.location,
+          maxParticipants: event.maxparticipants,
+          registrationstatus: event.registrationstatus || 'upcoming',
+          category: event.category,
+          organizer: event.organizer,
+          imageUrl: event.imageurl,
+          tags: event.tags || [],
+          requirements: event.requirements || [],
+          createdAt: event.created_at,
+          updatedAt: event.updated_at,
+          participantCount: event.participantcount || 0,
+          teamEvent: event.team_event || false,
+          maxTeamSize: event.max_team_size || 1,
+          minTeamSize: event.min_team_size || 1,
+          stats: event.stats || {
+            total: 0,
+            confirmed: 0,
+            attended: 0,
+            cancelled: 0
+          }
+        }));
+        setEvents(transformedEvents);
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteEvent = (eventId: string) => {
-    setEvents(prev => prev.filter(event => event.id !== eventId));
+  const handleCreateEvent = async (eventData: Event) => {
+    try {
+      const result = await createEvent({
+        title: eventData.title,
+        description: eventData.description,
+        date: eventData.date,
+        time: eventData.time,
+        location: eventData.location,
+        maxParticipants: eventData.maxParticipants,
+        registrationstatus: eventData.registrationstatus || 'upcoming',
+        category: eventData.category,
+        organizer: eventData.organizer,
+        imageUrl: eventData.imageUrl,
+        tags: eventData.tags,
+        requirements: eventData.requirements,
+        teamEvent: eventData.teamEvent || false,
+        maxTeamSize: eventData.maxTeamSize || 1,
+        minTeamSize: eventData.minTeamSize || 1,
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create event');
+      }
+
+      // Refresh events list
+      await fetchEventsData();
+    } catch (error) {
+      console.error('Error creating event:', error);
+      alert('Failed to create event. Please try again.');
+    }
+  };
+
+  const handleUpdateEvent = async (eventId: string, updates: Partial<Event>) => {
+    try {
+      const result = await updateEvent(eventId, updates);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update event');
+      }
+
+      // Refresh events list
+      await fetchEventsData();
+    } catch (error) {
+      console.error('Error updating event:', error);
+      alert('Failed to update event. Please try again.');
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (!confirm('Are you sure you want to delete this event?')) {
+      return;
+    }
+
+    try {
+      const result = await deleteEvent(eventId);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete event');
+      }
+
+      // Refresh events list
+      await fetchEventsData();
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Failed to delete event. Please try again.');
+    }
   };
 
   return (
@@ -111,14 +174,32 @@ export default function AdminDashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-sm text-neutral-400">
-                Welcome, Admin
-              </span>
+              {userProfile ? (
+                <div className="flex items-center space-x-3">
+                  <img 
+                    src={userProfile.picture} 
+                    alt={userProfile.name}
+                    className="w-8 h-8 rounded-full ring-2 ring-emerald-500/20"
+                  />
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-neutral-200">
+                      {userProfile.name}
+                    </p>
+                    <p className="text-xs text-neutral-500">
+                      Admin {userProfile.branch ? `• ${userProfile.branch}` : ''}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <span className="text-sm text-neutral-400">
+                  Welcome, Admin
+                </span>
+              )}
               <Button
                 onClick={() => router.push("/")}
                 variant="outline"
                 size="sm"
-                className="border-neutral-700 text-neutral-600 hover:bg-neutral-800"
+                className="border-neutral-700 text-neutral-200 hover:bg-neutral-800 hover:text-white"
               >
                 Back to Home
               </Button>
@@ -151,24 +232,35 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <TabsContent value="overview" className="space-y-6">
-              <AdminStats events={events} />
-            </TabsContent>
+            {loading ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-32 bg-neutral-900/50 rounded-lg animate-pulse" />
+                  ))}
+                </div>
+                <div className="h-64 bg-neutral-900/50 rounded-lg animate-pulse" />
+              </div>
+            ) : (
+              <>
+                <TabsContent value="overview" className="space-y-6">
+                  <AdminStats events={events} />
+                </TabsContent>
 
-            <TabsContent value="events" className="space-y-6">
-              <EventManagement
-                events={events}
-                onCreateEvent={handleCreateEvent}
-                onUpdateEvent={handleUpdateEvent}
-                onDeleteEvent={handleDeleteEvent}
-              />
-            </TabsContent>
+                <TabsContent value="events" className="space-y-6">
+                  <EventManagement
+                    events={events}
+                    onCreateEvent={handleCreateEvent}
+                    onUpdateEvent={handleUpdateEvent}
+                    onDeleteEvent={handleDeleteEvent}
+                  />
+                </TabsContent>
 
-            <TabsContent value="participants" className="space-y-6">
-              <ParticipantManagement events={events} />
-            </TabsContent>
-
-            
+                <TabsContent value="participants" className="space-y-6">
+                  <ParticipantManagement events={events} />
+                </TabsContent>
+              </>
+            )}
           </motion.div>
         </Tabs>
       </div>
