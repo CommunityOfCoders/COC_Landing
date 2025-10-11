@@ -77,7 +77,33 @@ export function TeamManagementSection({
       const result = await getMyTeam(eventId);
       
       if (result.success && result.data) {
-        setTeamData(result.data);
+        // Ensure team_members is properly parsed
+        const data = result.data;
+        if (data.team_members && typeof data.team_members === 'string') {
+          try {
+            data.team_members = JSON.parse(data.team_members);
+          } catch (e) {
+            console.error("Failed to parse team_members:", e);
+            data.team_members = [];
+          }
+        }
+        
+        // If team_members is an array, ensure each member is a proper object
+        if (Array.isArray(data.team_members)) {
+          data.team_members = data.team_members.map((member: any) => {
+            if (typeof member === 'string') {
+              try {
+                return JSON.parse(member);
+              } catch (e) {
+                console.error("Failed to parse team member:", e);
+                return { email: '', name: '' };
+              }
+            }
+            return member;
+          });
+        }
+        
+        setTeamData(data);
       }
     } catch (error) {
       console.error("Error fetching team data:", error);
@@ -206,10 +232,15 @@ export function TeamManagementSection({
     return null;
   }
 
-  const currentTeamSize = (teamData.team_members?.length || 0) + 1;
+  // Filter out current user from team_members array since leader is now included
+  const otherMembers = (teamData.team_members || []).filter(
+    (member: TeamMember) => member.email !== teamData.users.email
+  );
+  
+  const currentTeamSize = teamData.team_members?.length || 0;
   const canAddMembers = currentTeamSize < maxTeamSize;
   // Allow removing members even if it goes below minimum - will unregister the team
-  const canRemoveMembers = teamData.team_members && teamData.team_members.length > 0;
+  const canRemoveMembers = otherMembers.length > 0;
 
   console.log('Team Management:', {
     currentTeamSize,
@@ -218,7 +249,9 @@ export function TeamManagementSection({
     canRemoveMembers,
     canAddMembers,
     isTeamLeader: teamData.is_team_leader,
-    teamMembersCount: teamData.team_members?.length || 0
+    teamMembersCount: teamData.team_members?.length || 0,
+    otherMembersCount: otherMembers.length,
+    currentUserEmail: teamData.users.email
   });
 
   return (
@@ -270,34 +303,41 @@ export function TeamManagementSection({
             )}
           </div>
 
-          {/* Team Members List */}
-          {teamData.team_members && teamData.team_members.length > 0 && (
+          {/* Team Members List (excluding current user) */}
+          {otherMembers.length > 0 && (
             <div className="space-y-2">
-              {teamData.team_members.map((member, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg"
-                >
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-neutral-200">
-                      {member.name || member.email}
-                    </p>
-                    <p className="text-xs text-neutral-400">{member.email}</p>
+              {otherMembers.map((member, index) => {
+                // Find if this member is the leader
+                const isLeader = teamData.team_members?.find(
+                  (m: TeamMember) => m.email === member.email
+                ) && member.email !== teamData.users.email;
+                
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-neutral-800/30 rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-neutral-200">
+                        {member.name || member.email}
+                      </p>
+                      <p className="text-xs text-neutral-400">{member.email}</p>
+                    </div>
+                    {teamData.is_team_leader && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRemoveTeamMember(member.email)}
+                        disabled={updating}
+                        className="border-red-500/30 text-red-400 hover:text-red-300 hover:bg-red-950/30"
+                      >
+                        <UserMinus className="w-4 h-4 mr-1" />
+                        Remove
+                      </Button>
+                    )}
                   </div>
-                  {teamData.is_team_leader && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleRemoveTeamMember(member.email)}
-                      disabled={updating}
-                      className="border-red-500/30 text-red-400 hover:text-red-300 hover:bg-red-950/30"
-                    >
-                      <UserMinus className="w-4 h-4 mr-1" />
-                      Remove
-                    </Button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

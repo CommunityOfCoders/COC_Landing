@@ -59,6 +59,31 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
         // Transform API data to match Participant interface
         const transformedData = result.data.map((p: any) => {
           const userData = p.users || {};
+          
+          // Parse team_members if it's a string or contains stringified objects
+          let parsedTeamMembers: any[] = [];
+          if (p.team_members) {
+            if (typeof p.team_members === 'string') {
+              try {
+                parsedTeamMembers = JSON.parse(p.team_members);
+              } catch (e) {
+                console.error("Failed to parse team_members:", e);
+                parsedTeamMembers = [];
+              }
+            } else if (Array.isArray(p.team_members)) {
+              parsedTeamMembers = p.team_members.map((m: any) => {
+                if (typeof m === 'string') {
+                  try {
+                    return JSON.parse(m);
+                  } catch (e) {
+                    return { email: m, name: '' };
+                  }
+                }
+                return m;
+              });
+            }
+          }
+          
           return {
             id: p.id,
             eventId: p.event_id,
@@ -71,7 +96,7 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
             registeredAt: p.created_at,
             status: p.status || 'registered',
             teamName: p.team_name || undefined,
-            teamMembers: p.team_members ? p.team_members.map((m: any) => m.email || m) : [],
+            teamMembers: parsedTeamMembers.map((m: any) => m.email || m),
             isTeamLeader: p.is_team_leader || false,
             skills: [],
             experience: undefined,

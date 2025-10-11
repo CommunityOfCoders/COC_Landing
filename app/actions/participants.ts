@@ -187,6 +187,19 @@ export async function registerForEvent(registration: {
         };
       }
 
+      // Get leader's info to include in team_members array
+      const { data: leaderInfo } = await supabaseAdmin
+        .from("users")
+        .select("email, name")
+        .eq("uid", user.uid)
+        .single();
+
+      // Create complete team_members array including the leader
+      const completeTeamMembers = [
+        { email: leaderInfo?.email || session.user.email, name: leaderInfo?.name || session.user.name },
+        ...registration.team_members
+      ];
+
       // Register team leader
       const { data: leaderParticipant, error: leaderError } = await supabaseAdmin
         .from("participants")
@@ -196,7 +209,7 @@ export async function registerForEvent(registration: {
             user_id: user.uid,
             status: "registered",
             team_name: registration.team_name,
-            team_members: registration.team_members,
+            team_members: completeTeamMembers,
             is_team_leader: true,
           },
         ])
@@ -208,13 +221,13 @@ export async function registerForEvent(registration: {
         return { success: false, error: "Failed to register team" };
       }
 
-      // Register all team members
+      // Register all team members with the complete team list
       const teamMemberInserts = teamMemberUsers.map(member => ({
         event_id: registration.event_id,
         user_id: member.uid,
         status: "registered",
         team_name: registration.team_name,
-        team_members: registration.team_members,
+        team_members: completeTeamMembers,
         is_team_leader: false,
       }));
 

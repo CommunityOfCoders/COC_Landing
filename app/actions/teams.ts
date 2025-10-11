@@ -109,8 +109,8 @@ export async function addTeamMember(
       return { success: false, error: "Event not found" };
     }
 
-    // Check team size limit
-    const currentTeamSize = (leaderParticipant.team_members?.length || 0) + 1;
+    // Check team size limit (team_members now includes leader)
+    const currentTeamSize = leaderParticipant.team_members?.length || 0;
     if (currentTeamSize >= event.max_team_size) {
       return {
         success: false,
@@ -270,13 +270,13 @@ export async function removeTeamMember(
       return { success: false, error: "Member not found" };
     }
 
-    // Update team members array
+    // Update team members array (now includes leader, so just filter)
     const updatedTeamMembers = (leaderParticipant.team_members || []).filter(
       (m: any) => m.email !== memberEmail
     );
 
-    const currentTeamSize = (leaderParticipant.team_members?.length || 0) + 1;
-    const newTeamSize = currentTeamSize - 1;
+    const currentTeamSize = leaderParticipant.team_members?.length || 0;
+    const newTeamSize = updatedTeamMembers.length;
     const wouldBeUnderMinimum = newTeamSize < event.min_team_size;
 
     if (wouldBeUnderMinimum) {
