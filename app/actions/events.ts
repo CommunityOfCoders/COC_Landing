@@ -43,7 +43,7 @@ export async function createEvent(eventData: {
   time?: string;
   location: string;
   maxParticipants?: number;
-  registrationStatus?: string;
+  registrationstatus?: string;
   category?: string;
   organizer?: string;
   tags?: string[];
@@ -95,7 +95,7 @@ export async function createEvent(eventData: {
           time: eventData.time,
           location: eventData.location,
           maxparticipants: eventData.maxParticipants || 100,
-          registrationstatus: eventData.registrationStatus || 'upcoming',
+          registrationstatus: eventData.registrationstatus || 'upcoming',
           category: eventData.category || "workshop",
           organizer: eventData.organizer || "COC",
           tags: eventData.tags || [],

@@ -119,7 +119,7 @@ export default function EventManagement({
       time: formData.time,
       location: formData.location,
       maxParticipants: formData.maxParticipants,
-      registrationStatus: "upcoming",
+      registrationstatus: "upcoming",
       category: formData.category,
       organizer: "Admin",
       tags: formData.tags,
@@ -715,12 +715,12 @@ export default function EventManagement({
                       <div className="flex items-center space-x-3 mb-2">
                         <h3 className="text-lg font-semibold text-neutral-200">{event.title}</h3>
                         <select
-                          value={event.registrationStatus}
-                          onChange={(e) => onUpdateEvent(event.id, { registrationStatus: e.target.value as Event['registrationStatus'] })}
+                          value={event.registrationstatus}
+                          onChange={(e) => onUpdateEvent(event.id, { registrationstatus: e.target.value as Event['registrationstatus'] })}
                           className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-0 ${
-                            event.registrationStatus === 'open' 
+                            event.registrationstatus === 'open' 
                               ? 'bg-emerald-500/20 text-emerald-300' 
-                              : event.registrationStatus === 'upcoming'
+                              : event.registrationstatus === 'upcoming'
                               ? 'bg-blue-500/20 text-blue-300'
                               : 'bg-gray-500/20 text-gray-300'
                           }`}

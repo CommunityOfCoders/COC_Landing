@@ -16,6 +16,7 @@ import { EventWithStats } from "@/types/events";
 import { LayoutGrid, Calendar } from "lucide-react";
 import { getEvents } from "@/app/actions/events";
 import { getParticipants, registerForEvent } from "@/app/actions/participants";
+import { getCurrentUserProfile } from "@/app/actions/users";
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -40,7 +41,17 @@ export default function Dashboard() {
 
   const fetchUserRegistrations = async () => {
     try {
-      const result = await getParticipants();
+      // Get current user's UID
+      const userResult = await getCurrentUserProfile();
+      if (!userResult.success || !userResult.data) {
+        console.error("Failed to get user profile:", !userResult.success ? (userResult as any).error : "No user data");
+        return;
+      }
+
+      const userId = userResult.data.uid;
+
+      // Fetch only this user's registrations
+      const result = await getParticipants({ userId });
 
       if (result.success && result.data) {
         const eventIds = new Set<string>(
@@ -74,7 +85,7 @@ export default function Dashboard() {
           time: event.time,
           location: event.location,
           maxParticipants: event.maxparticipants,
-          registrationStatus: event.registrationstatus || 'upcoming',
+          registrationstatus: event.registrationstatus || 'upcoming',
           category: event.category,
           organizer: event.organizer,
           imageUrl: event.imageurl,
@@ -170,7 +181,7 @@ export default function Dashboard() {
               date: selectedEvent.date,
               location: selectedEvent.location,
               maxparticipants: selectedEvent.maxParticipants || 0,
-              registrationstatus: selectedEvent.registrationStatus,
+              registrationstatus: selectedEvent.registrationstatus,
               category: selectedEvent.category,
               organizer: selectedEvent.organizer,
               tags: selectedEvent.tags,

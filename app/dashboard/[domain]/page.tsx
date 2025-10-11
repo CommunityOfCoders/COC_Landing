@@ -18,8 +18,6 @@ interface Domain {
   categories: string[];
 }
 
-export const runtime = 'edge';
-
 export default function DomainPage() {
   const { data: session } = useSession();
   const params = useParams();

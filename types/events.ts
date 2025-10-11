@@ -15,7 +15,7 @@ export type EventCategory =
   | 'other';
 
 export type EventStatus = 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
-export type RegistrationStatus = 'open' | 'closed' | 'upcoming';
+export type registrationstatus = 'open' | 'closed' | 'upcoming';
 
 export interface EventHighlight {
   title: string;
@@ -31,7 +31,7 @@ export interface Event {
   time?: string;
   location: string;
   maxParticipants?: number;
-  registrationStatus: RegistrationStatus;
+  registrationstatus: registrationstatus;
   category: EventCategory;
   organizer: string;
   imageUrl: string; // Now required with default placeholder

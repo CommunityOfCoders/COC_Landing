@@ -13,7 +13,7 @@ interface AdminStatsProps {
 
 export default function AdminStats({ events }: AdminStatsProps) {
   const totalEvents = events.length;
-  const activeEvents = events.filter(e => e.registrationStatus === 'open').length;
+  const activeEvents = events.filter(e => e.registrationstatus === 'open').length;
   const totalParticipants = events.reduce((sum, event) => sum + event.participantCount, 0);
   const upcomingEvents = events.filter(e => new Date(e.date) > new Date()).length;
 
@@ -125,13 +125,13 @@ export default function AdminStats({ events }: AdminStatsProps) {
                         <span>{new Date(event.date).toLocaleDateString()}</span>
                         <span>{event.location}</span>
                         <span className={`px-2 py-1 rounded-full ${
-                          event.registrationStatus === 'open' 
+                          event.registrationstatus === 'open' 
                             ? 'bg-emerald-500/20 text-emerald-300' 
-                            : event.registrationStatus === 'upcoming'
+                            : event.registrationstatus === 'upcoming'
                             ? 'bg-blue-500/20 text-blue-300'
                             : 'bg-gray-500/20 text-gray-300'
                         }`}>
-                          {event.registrationStatus}
+                          {event.registrationstatus}
                         </span>
                       </div>
                     </div>

@@ -70,13 +70,13 @@ export function EventDetailsModal({
     console.log('EventDetailsModal - isRegistered:', isRegistered, 'team_event:', event.team_event);
   }, [isRegistered, event.team_event]);
 
-  const registrationStatus = typeof event.registrationstatus === 'string' 
+  const registrationstatus = typeof event.registrationstatus === 'string' 
     ? event.registrationstatus.toLowerCase()
     : 'closed';
   const isFull = event.participantcount >= event.maxparticipants;
 
   const getStatusBadge = () => {
-    switch (registrationStatus) {
+    switch (registrationstatus) {
       case 'open':
         return {
           className: "border-green-500/50 text-green-400",
@@ -288,16 +288,16 @@ export function EventDetailsModal({
                   onRegister(event);
                   onOpenChange(false);
                 }}
-                disabled={registrationStatus !== 'open' || isFull || registering}
+                disabled={registrationstatus !== 'open' || isFull || registering}
                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white disabled:bg-neutral-800 disabled:text-neutral-500"
               >
                 {registering
                   ? "Registering..."
                   : isFull
                   ? "Event Full"
-                  : registrationStatus === 'upcoming'
+                  : registrationstatus === 'upcoming'
                   ? "Coming Soon"
-                  : registrationStatus !== 'open'
+                  : registrationstatus !== 'open'
                   ? "Registration Closed"
                   : event.team_event
                   ? "Register Team"

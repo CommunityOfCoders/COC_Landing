@@ -233,8 +233,8 @@ export default function EventCalendarView({ events, onEventClick }: EventCalenda
                         <Badge className={getCategoryColor(event.category)}>
                           {event.category}
                         </Badge>
-                        <Badge className={getStatusColor(event.registrationStatus)}>
-                          {event.registrationStatus}
+                        <Badge className={getStatusColor(event.registrationstatus)}>
+                          {event.registrationstatus}
                         </Badge>
                       </div>
                       <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-400">
@@ -286,7 +286,7 @@ export default function EventCalendarView({ events, onEventClick }: EventCalenda
           </div>
           <div>
             <p className="text-2xl font-bold text-blue-400">
-              {monthEvents.filter(e => e.registrationStatus === 'open').length}
+              {monthEvents.filter(e => e.registrationstatus === 'open').length}
             </p>
             <p className="text-sm text-neutral-400">Open Registration</p>
           </div>

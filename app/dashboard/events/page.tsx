@@ -24,6 +24,7 @@ import { TeamRegistrationModal } from "@/components/TeamRegistrationModal";
 import { EventDetailsModal } from "@/components/EventDetailsModal";
 import { getEvents } from "@/app/actions/events";
 import { getParticipants, registerForEvent } from "@/app/actions/participants";
+import { getCurrentUserProfile } from "@/app/actions/users";
 
 interface Event {
   id: string;
@@ -81,7 +82,17 @@ export default function EventsPage() {
 
   const fetchUserRegistrations = async () => {
     try {
-      const result = await getParticipants();
+      // Get current user's UID
+      const userResult = await getCurrentUserProfile();
+      if (!userResult.success || !userResult.data) {
+        console.error("Failed to get user profile:", !userResult.success ? (userResult as any).error : "No user data");
+        return;
+      }
+
+      const userId = userResult.data.uid;
+
+      // Fetch only this user's registrations
+      const result = await getParticipants({ userId });
 
       if (result.success && result.data) {
         const eventIds = new Set<string>(
@@ -225,12 +236,12 @@ export default function EventsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event, index) => {
               const isRegistered = registeredEventIds.has(event.id);
-              const registrationStatus = typeof event.registrationstatus === 'string' 
+              const registrationstatus = typeof event.registrationstatus === 'string' 
                 ? event.registrationstatus.toLowerCase()
                 : 'closed';
               
               const getStatusBadge = () => {
-                switch (registrationStatus) {
+                switch (registrationstatus) {
                   case 'open':
                     return {
                       className: "border-green-500/50 text-green-400",
@@ -353,7 +364,7 @@ export default function EventsPage() {
                       <Button
                         onClick={() => handleRegister(event)}
                         disabled={
-                          registrationStatus !== 'open' ||
+                          registrationstatus !== 'open' ||
                           event.participantcount >= event.maxparticipants ||
                           registering === event.id ||
                           isRegistered
@@ -366,9 +377,9 @@ export default function EventsPage() {
                           ? "Registered"
                           : event.participantcount >= event.maxparticipants
                           ? "Full"
-                          : registrationStatus === 'upcoming'
+                          : registrationstatus === 'upcoming'
                           ? "Coming Soon"
-                          : registrationStatus !== 'open'
+                          : registrationstatus !== 'open'
                           ? "Closed"
                           : event.team_event
                           ? "Register"
