@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, Plus, Loader2, CheckCircle2, XCircle, Search } from "lucide-react";
+import { searchUserByEmail } from "@/app/actions/users";
+import { registerForEvent } from "@/app/actions/participants";
 
 interface TeamMember {
   email: string;
@@ -73,14 +75,13 @@ export function TeamRegistrationModal({
       updated[index] = { ...updated[index], searching: true };
       setTeamMembers(updated);
 
-      const response = await fetch(`/api/users/search?email=${encodeURIComponent(email)}`);
-      const data = await response.json();
+      const result = await searchUserByEmail(email);
 
       const updatedWithResult = [...teamMembers];
-      if (data.exists && data.user) {
+      if (result.success && result.data.exists && result.data.user) {
         updatedWithResult[index] = {
           email,
-          name: data.user.name,
+          name: result.data.user.name,
           exists: true,
           searching: false,
         };
@@ -175,22 +176,14 @@ export function TeamRegistrationModal({
 
     try {
       setLoading(true);
-      const response = await fetch("/api/participants", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          event_id: eventId,
-          team_name: teamName,
-          team_members: validMembers,
-        }),
+      const result = await registerForEvent({
+        event_id: eventId,
+        team_name: teamName,
+        team_members: validMembers,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to register team");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to register team");
       }
 
       alert("Team registered successfully!");

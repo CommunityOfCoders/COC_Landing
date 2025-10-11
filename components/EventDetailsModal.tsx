@@ -19,11 +19,12 @@ import {
   Tag,
   CheckCircle,
   XCircle,
-  UsersRound,
-  User
+  User,
+  UsersRound
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { TeamManagementSection } from "./TeamManagementSection";
 
 interface Event {
   id: string;
@@ -53,6 +54,7 @@ interface EventDetailsModalProps {
   isRegistered: boolean;
   onRegister: (event: Event) => void;
   registering: boolean;
+  onTeamUpdate?: () => void;
 }
 
 export function EventDetailsModal({
@@ -62,11 +64,42 @@ export function EventDetailsModal({
   isRegistered,
   onRegister,
   registering,
+  onTeamUpdate,
 }: EventDetailsModalProps) {
-  const isOpen = typeof event.registrationstatus === 'string' 
-    ? event.registrationstatus === 'open' 
-    : event.registrationstatus;
+  useEffect(() => {
+    console.log('EventDetailsModal - isRegistered:', isRegistered, 'team_event:', event.team_event);
+  }, [isRegistered, event.team_event]);
+
+  const registrationStatus = typeof event.registrationstatus === 'string' 
+    ? event.registrationstatus.toLowerCase()
+    : 'closed';
   const isFull = event.participantcount >= event.maxparticipants;
+
+  const getStatusBadge = () => {
+    switch (registrationStatus) {
+      case 'open':
+        return {
+          className: "border-green-500/50 text-green-400",
+          icon: <CheckCircle className="w-3 h-3 mr-1" />,
+          text: "Open"
+        };
+      case 'upcoming':
+        return {
+          className: "border-blue-500/50 text-blue-400",
+          icon: <Clock className="w-3 h-3 mr-1" />,
+          text: "Upcoming"
+        };
+      case 'closed':
+      default:
+        return {
+          className: "border-red-500/50 text-red-400",
+          icon: <XCircle className="w-3 h-3 mr-1" />,
+          text: "Closed"
+        };
+    }
+  };
+
+  const statusBadge = getStatusBadge();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,21 +110,16 @@ export function EventDetailsModal({
               <DialogTitle className="text-2xl text-neutral-100 mb-2">
                 {event.title}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                Event details for {event.title}
+              </DialogDescription>
               <div className="flex flex-wrap gap-2">
                 <Badge
                   variant="outline"
-                  className={
-                    isOpen
-                      ? "border-green-500/50 text-green-400"
-                      : "border-red-500/50 text-red-400"
-                  }
+                  className={statusBadge.className}
                 >
-                  {isOpen ? (
-                    <CheckCircle className="w-3 h-3 mr-1" />
-                  ) : (
-                    <XCircle className="w-3 h-3 mr-1" />
-                  )}
-                  {isOpen ? "Open" : "Closed"}
+                  {statusBadge.icon}
+                  {statusBadge.text}
                 </Badge>
                 <Badge variant="outline" className="border-neutral-700 text-neutral-200">
                   {event.category}
@@ -227,6 +255,22 @@ export function EventDetailsModal({
             </>
           )}
 
+          {/* Team Management Section - Show if registered for team event */}
+          {isRegistered && event.team_event && (
+            <>
+              <Separator className="bg-neutral-800" />
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white">Team Management</h3>
+                <TeamManagementSection
+                  eventId={event.id}
+                  minTeamSize={event.min_team_size || 2}
+                  maxTeamSize={event.max_team_size || 4}
+                  onTeamUpdate={onTeamUpdate}
+                />
+              </div>
+            </>
+          )}
+
           <Separator className="bg-neutral-800" />
 
           {/* Action Buttons */}
@@ -238,26 +282,28 @@ export function EventDetailsModal({
             >
               Close
             </Button>
-            <Button
-              onClick={() => {
-                onRegister(event);
-                onOpenChange(false);
-              }}
-              disabled={!isOpen || isFull || registering || isRegistered}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white disabled:bg-neutral-800 disabled:text-neutral-500"
-            >
-              {registering
-                ? "Registering..."
-                : isRegistered
-                ? "Already Registered"
-                : isFull
-                ? "Event Full"
-                : !isOpen
-                ? "Registration Closed"
-                : event.team_event
-                ? "Register Team"
-                : "Register Now"}
-            </Button>
+            {!isRegistered && (
+              <Button
+                onClick={() => {
+                  onRegister(event);
+                  onOpenChange(false);
+                }}
+                disabled={registrationStatus !== 'open' || isFull || registering}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white disabled:bg-neutral-800 disabled:text-neutral-500"
+              >
+                {registering
+                  ? "Registering..."
+                  : isFull
+                  ? "Event Full"
+                  : registrationStatus === 'upcoming'
+                  ? "Coming Soon"
+                  : registrationStatus !== 'open'
+                  ? "Registration Closed"
+                  : event.team_event
+                  ? "Register Team"
+                  : "Register Now"}
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>

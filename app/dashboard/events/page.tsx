@@ -19,8 +19,11 @@ import {
   UsersRound,
   Info
 } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import { TeamRegistrationModal } from "@/components/TeamRegistrationModal";
 import { EventDetailsModal } from "@/components/EventDetailsModal";
+import { getEvents } from "@/app/actions/events";
+import { getParticipants, registerForEvent } from "@/app/actions/participants";
 
 interface Event {
   id: string;
@@ -62,11 +65,12 @@ export default function EventsPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/events");
-      const data = await response.json();
+      const result = await getEvents();
 
-      if (data.events) {
-        setEvents(data.events);
+      if (result.success && result.data) {
+        setEvents(result.data);
+      } else if (!result.success) {
+        console.error("Error fetching events:", result.error);
       }
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -77,12 +81,11 @@ export default function EventsPage() {
 
   const fetchUserRegistrations = async () => {
     try {
-      const response = await fetch("/api/participants");
-      const data = await response.json();
+      const result = await getParticipants();
 
-      if (data.participants) {
+      if (result.success && result.data) {
         const eventIds = new Set<string>(
-          data.participants.map((p: any) => p.event_id as string)
+          result.data.map((p: any) => p.event_id as string)
         );
         setRegisteredEventIds(eventIds);
       }
@@ -102,23 +105,15 @@ export default function EventsPage() {
     // Individual registration
     try {
       setRegistering(event.id);
-      const response = await fetch("/api/participants", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          event_id: event.id,
-        }),
-      });
+      const result = await registerForEvent({ event_id: event.id });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to register");
+      if (result.success) {
+        alert("Successfully registered for the event!");
+        await fetchEvents();
+        await fetchUserRegistrations();
+      } else {
+        alert(result.error || "Failed to register");
       }
-
-      alert("Successfully registered for the event!");
-      await fetchEvents();
     } catch (error: any) {
       console.error("Error registering:", error);
       alert(error.message || "Failed to register. Please try again.");
@@ -127,9 +122,14 @@ export default function EventsPage() {
     }
   };
 
-  const handleTeamRegistrationSuccess = () => {
-    fetchEvents();
-    fetchUserRegistrations();
+  const handleTeamRegistrationSuccess = async () => {
+    await fetchEvents();
+    await fetchUserRegistrations();
+    setTeamModalOpen(false);
+  };
+
+  const handleTeamUpdate = async () => {
+    await fetchEvents();
   };
 
   const filteredEvents = events.filter((event) => {
@@ -164,6 +164,7 @@ export default function EventsPage() {
             isRegistered={registeredEventIds.has(selectedEvent.id)}
             onRegister={handleRegister}
             registering={registering === selectedEvent.id}
+            onTeamUpdate={handleTeamUpdate}
           />
         </>
       )}
@@ -224,9 +225,35 @@ export default function EventsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event, index) => {
               const isRegistered = registeredEventIds.has(event.id);
-              const isOpen = typeof event.registrationstatus === 'string' 
-                ? event.registrationstatus === 'open' 
-                : event.registrationstatus;
+              const registrationStatus = typeof event.registrationstatus === 'string' 
+                ? event.registrationstatus.toLowerCase()
+                : 'closed';
+              
+              const getStatusBadge = () => {
+                switch (registrationStatus) {
+                  case 'open':
+                    return {
+                      className: "border-green-500/50 text-green-400",
+                      icon: <CheckCircle className="w-3 h-3 mr-1" />,
+                      text: "Open"
+                    };
+                  case 'upcoming':
+                    return {
+                      className: "border-blue-500/50 text-blue-400",
+                      icon: <Clock className="w-3 h-3 mr-1" />,
+                      text: "Upcoming"
+                    };
+                  case 'closed':
+                  default:
+                    return {
+                      className: "border-red-500/50 text-red-400",
+                      icon: <XCircle className="w-3 h-3 mr-1" />,
+                      text: "Closed"
+                    };
+                }
+              };
+
+              const statusBadge = getStatusBadge();
               
               return (
               <motion.div
@@ -241,18 +268,10 @@ export default function EventsPage() {
                       <div className="flex flex-wrap gap-2">
                         <Badge
                           variant="outline"
-                          className={
-                            isOpen
-                              ? "border-green-500/50 text-green-400"
-                              : "border-red-500/50 text-red-400"
-                          }
+                          className={statusBadge.className}
                         >
-                          {isOpen ? (
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                          ) : (
-                            <XCircle className="w-3 h-3 mr-1" />
-                          )}
-                          {isOpen ? "Open" : "Closed"}
+                          {statusBadge.icon}
+                          {statusBadge.text}
                         </Badge>
                         {isRegistered && (
                           <Badge variant="outline" className="border-blue-500/50 text-blue-400">
@@ -274,7 +293,12 @@ export default function EventsPage() {
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center text-sm text-neutral-400">
                         <Clock className="w-4 h-4 mr-2 text-emerald-500" />
-                        {event.time}
+                        <span>
+                          {event.time}
+                          {event.date ? (
+                            <span className="ml-2 text-neutral-400">· {format(parseISO(event.date), 'MMM dd')}</span>
+                          ) : null}
+                        </span>
                       </div>
                       <div className="flex items-center text-sm text-neutral-400">
                         <MapPin className="w-4 h-4 mr-2 text-emerald-500" />
@@ -329,7 +353,7 @@ export default function EventsPage() {
                       <Button
                         onClick={() => handleRegister(event)}
                         disabled={
-                          !isOpen ||
+                          registrationStatus !== 'open' ||
                           event.participantcount >= event.maxparticipants ||
                           registering === event.id ||
                           isRegistered
@@ -342,7 +366,9 @@ export default function EventsPage() {
                           ? "Registered"
                           : event.participantcount >= event.maxparticipants
                           ? "Full"
-                          : !isOpen
+                          : registrationStatus === 'upcoming'
+                          ? "Coming Soon"
+                          : registrationStatus !== 'open'
                           ? "Closed"
                           : event.team_event
                           ? "Register"

@@ -1,3 +1,28 @@
+export type EventCategory = 
+  | 'workshop'
+  | 'hackathon'
+  | 'seminar'
+  | 'competition'
+  | 'webinar'
+  | 'bootcamp'
+  | 'conference'
+  | 'networking'
+  | 'tech-talk'
+  | 'panel-discussion'
+  | 'project-showcase'
+  | 'coding-contest'
+  | 'study-group'
+  | 'other';
+
+export type EventStatus = 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
+export type RegistrationStatus = 'open' | 'closed' | 'upcoming';
+
+export interface EventHighlight {
+  title: string;
+  description: string;
+  imageUrl?: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -6,10 +31,10 @@ export interface Event {
   time?: string;
   location: string;
   maxParticipants?: number;
-  registrationStatus: 'open' | 'closed' | 'upcoming';
-  category: 'workshop' | 'hackathon' | 'seminar' | 'competition' | 'other';
+  registrationStatus: RegistrationStatus;
+  category: EventCategory;
   organizer: string;
-  imageUrl?: string;
+  imageUrl: string; // Now required with default placeholder
   tags: string[];
   requirements?: string[];
   createdAt: string;
@@ -17,6 +42,13 @@ export interface Event {
   teamEvent?: boolean;
   maxTeamSize?: number;
   minTeamSize?: number;
+  // New fields
+  eventStatus?: EventStatus;
+  eventHighlights?: EventHighlight[];
+  eventPhotos?: string[];
+  attendanceCount?: number;
+  isFeatured?: boolean;
+  externalLink?: string;
 }
 
 export interface Participant {
@@ -35,6 +67,7 @@ export interface Participant {
   status: 'registered' | 'confirmed' | 'attended' | 'cancelled';
   teamName?: string;
   teamMembers?: string[];
+  isTeamLeader?: boolean;
 }
 
 export interface EventFormData {
@@ -44,13 +77,16 @@ export interface EventFormData {
   time: string;
   location: string;
   maxParticipants: number;
-  category: Event['category'];
+  category: EventCategory;
   tags: string[];
   requirements: string[];
   imageUrl?: string;
   teamEvent?: boolean;
   maxTeamSize?: number;
   minTeamSize?: number;
+  eventStatus?: EventStatus;
+  isFeatured?: boolean;
+  externalLink?: string;
 }
 
 export interface ParticipantStats {
@@ -63,4 +99,20 @@ export interface ParticipantStats {
 export interface EventWithStats extends Event {
   participantCount: number;
   stats: ParticipantStats;
+  viewCount?: number;
+}
+
+// Event analytics types
+export interface EventAnalytics {
+  id: string;
+  title: string;
+  date: string;
+  category: EventCategory;
+  eventStatus: EventStatus;
+  maxParticipants: number;
+  participantCount: number;
+  attendanceCount: number;
+  viewCount: number;
+  registrationPercentage: number;
+  attendancePercentage: number;
 }

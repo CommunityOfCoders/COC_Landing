@@ -76,6 +76,9 @@ const Navbar = () => {
             <Link href="/teams" className="text-gray-300 hover:text-green-400 transition-colors font-montserrat text-sm">
               Teams
             </Link>
+            <Link href="/events/past" className="text-gray-300 hover:text-green-400 transition-colors font-montserrat text-sm">
+              Past Events
+            </Link>
             
             {/* Clubs Dropdown */}
             <div className="relative" onMouseEnter={handleClubsMouseEnter} onMouseLeave={handleClubsMouseLeave}>

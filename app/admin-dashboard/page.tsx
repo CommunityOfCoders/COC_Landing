@@ -11,6 +11,8 @@ import EventManagement from "@/components/admin/EventManagement";
 import ParticipantManagement from "@/components/admin/ParticipantManagement";
 import AdminStats from "@/components/admin/AdminStats";
 import { Event, EventWithStats } from "@/types/events";
+import { getEvents, createEvent, updateEvent, deleteEvent } from "@/app/actions/events";
+import { getCurrentUserProfile } from "@/app/actions/users";
 
 interface UserProfile {
   name: string;
@@ -30,32 +32,30 @@ export default function AdminDashboard() {
 
   // Fetch events and user profile from API
   useEffect(() => {
-    fetchEvents();
+    fetchEventsData();
     fetchUserProfile();
   }, []);
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch('/api/user');
-      const data = await response.json();
+      const result = await getCurrentUserProfile();
       
-      if (data.user) {
-        setUserProfile(data.user);
+      if (result.success && result.data) {
+        setUserProfile(result.data as UserProfile);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
   };
 
-  const fetchEvents = async () => {
+  const fetchEventsData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/events');
-      const data = await response.json();
+      const result = await getEvents();
       
-      if (data.events) {
+      if (result.success) {
         // Transform the data to match EventWithStats interface
-        const transformedEvents = data.events.map((event: any) => ({
+        const transformedEvents = result.data.map((event: any) => ({
           id: event.id,
           title: event.title,
           description: event.description,
@@ -93,36 +93,30 @@ export default function AdminDashboard() {
 
   const handleCreateEvent = async (eventData: Event) => {
     try {
-      const response = await fetch('/api/events', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: eventData.title,
-          description: eventData.description,
-          date: eventData.date,
-          time: eventData.time,
-          location: eventData.location,
-          maxParticipants: eventData.maxParticipants,
-          registrationStatus: eventData.registrationStatus || 'upcoming',
-          category: eventData.category,
-          organizer: eventData.organizer,
-          imageUrl: eventData.imageUrl,
-          tags: eventData.tags,
-          requirements: eventData.requirements,
-          teamEvent: eventData.teamEvent || false,
-          maxTeamSize: eventData.maxTeamSize || 1,
-          minTeamSize: eventData.minTeamSize || 1,
-        }),
+      const result = await createEvent({
+        title: eventData.title,
+        description: eventData.description,
+        date: eventData.date,
+        time: eventData.time,
+        location: eventData.location,
+        maxParticipants: eventData.maxParticipants,
+        registrationStatus: eventData.registrationStatus || 'upcoming',
+        category: eventData.category,
+        organizer: eventData.organizer,
+        imageUrl: eventData.imageUrl,
+        tags: eventData.tags,
+        requirements: eventData.requirements,
+        teamEvent: eventData.teamEvent || false,
+        maxTeamSize: eventData.maxTeamSize || 1,
+        minTeamSize: eventData.minTeamSize || 1,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create event');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create event');
       }
 
       // Refresh events list
-      await fetchEvents();
+      await fetchEventsData();
     } catch (error) {
       console.error('Error creating event:', error);
       alert('Failed to create event. Please try again.');
@@ -131,20 +125,14 @@ export default function AdminDashboard() {
 
   const handleUpdateEvent = async (eventId: string, updates: Partial<Event>) => {
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
+      const result = await updateEvent(eventId, updates);
 
-      if (!response.ok) {
-        throw new Error('Failed to update event');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update event');
       }
 
       // Refresh events list
-      await fetchEvents();
+      await fetchEventsData();
     } catch (error) {
       console.error('Error updating event:', error);
       alert('Failed to update event. Please try again.');
@@ -157,16 +145,14 @@ export default function AdminDashboard() {
     }
 
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
-        method: 'DELETE',
-      });
+      const result = await deleteEvent(eventId);
 
-      if (!response.ok) {
-        throw new Error('Failed to delete event');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to delete event');
       }
 
       // Refresh events list
-      await fetchEvents();
+      await fetchEventsData();
     } catch (error) {
       console.error('Error deleting event:', error);
       alert('Failed to delete event. Please try again.');

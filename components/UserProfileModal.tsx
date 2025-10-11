@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
+import { getCurrentUserProfile } from "@/app/actions/users";
 
 interface UserProfile {
   name: string;
@@ -21,6 +22,7 @@ interface UserProfile {
   picture: string;
   branch?: string;
   year?: number;
+  graduated?: boolean;
 }
 
 interface UserProfileModalProps {
@@ -32,12 +34,6 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
   const { data: session } = useSession();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    branch: "",
-    year: 1,
-  });
 
   useEffect(() => {
     if (open && session?.user?.email) {
@@ -48,47 +44,15 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/user");
-      const data = await response.json();
+      const result = await getCurrentUserProfile();
 
-      if (data.user) {
-        setProfile(data.user);
-        setFormData({
-          name: data.user.name || "",
-          branch: data.user.branch || "",
-          year: data.user.year || 1,
-        });
+      if (result.success && result.data) {
+        setProfile(result.data);
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      setSaving(true);
-      const response = await fetch("/api/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
-      const data = await response.json();
-      setProfile(data.user);
-      onOpenChange(false);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -98,7 +62,7 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
         <DialogHeader>
           <DialogTitle className="text-neutral-100">User Profile</DialogTitle>
           <DialogDescription className="text-neutral-400">
-            Update your profile information here
+            Your profile information (automatically synced from your account)
           </DialogDescription>
         </DialogHeader>
 
@@ -112,94 +76,65 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
               <Avatar className="h-24 w-24 ring-2 ring-emerald-500/20">
                 <AvatarImage src={profile?.picture || session?.user?.image || ""} />
                 <AvatarFallback className="bg-emerald-950 text-emerald-200 text-2xl">
-                  {formData.name?.[0]?.toUpperCase() || "U"}
+                  {profile?.name?.[0]?.toUpperCase() || session?.user?.name?.[0]?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-neutral-200">
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="bg-neutral-900 border-neutral-800 text-neutral-100"
-                />
+                <Label className="text-neutral-200">Name</Label>
+                <div className="px-3 py-2 bg-neutral-900/50 border border-neutral-800 rounded-md text-neutral-300">
+                  {profile?.name || session?.user?.name || "Not set"}
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-neutral-200">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  value={profile?.email || session?.user?.email || ""}
-                  disabled
-                  className="bg-neutral-900/50 border-neutral-800 text-neutral-400"
-                />
+                <Label className="text-neutral-200">Email</Label>
+                <div className="px-3 py-2 bg-neutral-900/50 border border-neutral-800 rounded-md text-neutral-300">
+                  {profile?.email || session?.user?.email || "Not set"}
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="branch" className="text-neutral-200">
-                  Branch
-                </Label>
-                <Input
-                  id="branch"
-                  value={formData.branch}
-                  onChange={(e) =>
-                    setFormData({ ...formData, branch: e.target.value })
-                  }
-                  placeholder="e.g., Computer Engineering"
-                  className="bg-neutral-900 border-neutral-800 text-neutral-100"
-                />
+                <Label className="text-neutral-200">Branch</Label>
+                <div className="px-3 py-2 bg-neutral-900/50 border border-neutral-800 rounded-md text-neutral-300">
+                  {profile?.branch || "Not set"}
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="year" className="text-neutral-200">
-                  Year
-                </Label>
-                <select
-                  id="year"
-                  value={formData.year}
-                  onChange={(e) =>
-                    setFormData({ ...formData, year: Number(e.target.value) })
-                  }
-                  className="w-full px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-md text-neutral-100"
-                >
-                  <option value={1}>First Year</option>
-                  <option value={2}>Second Year</option>
-                  <option value={3}>Third Year</option>
-                  <option value={4}>Fourth Year</option>
-                </select>
+                <Label className="text-neutral-200">Year</Label>
+                <div className="px-3 py-2 bg-neutral-900/50 border border-neutral-800 rounded-md text-neutral-300">
+                  {profile?.graduated ? (
+                    <span className="flex items-center gap-2">
+                      <span>Graduated</span>
+                      <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full border border-emerald-500/30">
+                        🎓 Alumni
+                      </span>
+                    </span>
+                  ) : profile?.year ? (
+                    profile.year === 1 ? "First Year" :
+                    profile.year === 2 ? "Second Year" :
+                    profile.year === 3 ? "Third Year" :
+                    profile.year === 4 ? "Fourth Year" :
+                    `Year ${profile.year}`
+                  ) : "Not set"}
+                </div>
+                <p className="text-xs text-neutral-500 mt-1">
+                  {profile?.graduated 
+                    ? "You have graduated from the program" 
+                    : "Year is automatically updated every July"}
+                </p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end">
               <Button
-                variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="border-neutral-800 text-neutral-200 hover:bg-neutral-900 hover:text-white"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={saving}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {saving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Changes"
-                )}
+                Close
               </Button>
             </div>
           </div>

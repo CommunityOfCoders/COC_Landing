@@ -26,6 +26,7 @@ import {
   Loader2
 } from "lucide-react";
 import { EventWithStats, Participant } from "@/types/events";
+import { getParticipants, updateParticipantStatus } from "@/app/actions/participants";
 
 interface ParticipantManagementProps {
   events: EventWithStats[];
@@ -44,39 +45,51 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
 
   // Fetch participants from API
   useEffect(() => {
-    const fetchParticipants = async () => {
+    const fetchParticipantsData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/participants');
-        if (!response.ok) throw new Error('Failed to fetch participants');
-        const data = await response.json();
+        const result = await getParticipants();
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to fetch participants');
+        }
+        
+        console.log('Fetched participants:', result.data);
         
         // Transform API data to match Participant interface
-        const transformedData = data.participants.map((p: any) => ({
-          id: p.id,
-          eventId: p.event_id,
-          name: p.users?.name || p.user_id,
-          email: p.users?.email || '',
-          phone: p.users?.phone || '',
-          college: 'VJTI',
-          year: p.users?.year || '',
-          branch: p.users?.branch || '',
-          registeredAt: p.created_at,
-          status: p.status,
-          teamName: p.team_name,
-          teamMembers: p.team_members || [],
-          isTeamLeader: p.is_team_leader
-        }));
+        const transformedData = result.data.map((p: any) => {
+          const userData = p.users || {};
+          return {
+            id: p.id,
+            eventId: p.event_id,
+            name: userData.name || 'Unknown',
+            email: userData.email || '',
+            phone: userData.phone || '',
+            college: 'VJTI',
+            year: userData.year?.toString() || '',
+            branch: userData.branch || '',
+            registeredAt: p.created_at,
+            status: p.status || 'registered',
+            teamName: p.team_name || undefined,
+            teamMembers: p.team_members ? p.team_members.map((m: any) => m.email || m) : [],
+            isTeamLeader: p.is_team_leader || false,
+            skills: [],
+            experience: undefined,
+            motivation: undefined
+          };
+        });
         
+        console.log('Transformed participants:', transformedData);
         setParticipants(transformedData);
       } catch (error) {
         console.error('Error fetching participants:', error);
+        alert('Failed to load participants. Check console for details.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchParticipants();
+    fetchParticipantsData();
   }, []);
 
   const filteredParticipants = useMemo(() => {
@@ -128,10 +141,11 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
 
   const exportParticipants = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
-      "Name,Email,Phone,College,Year,Branch,Event,Status,Registered At\n" +
-      filteredParticipants.map(p => 
-        `"${p.name}","${p.email}","${p.phone}","${p.college}","${p.year}","${p.branch}","${getEventTitle(p.eventId)}","${p.status}","${new Date(p.registeredAt).toLocaleDateString()}"`
-      ).join("\n");
+      "Name,Email,Phone,College,Year,Branch,Event,Team Name,Is Team Leader,Team Members,Status,Registered At\n" +
+      filteredParticipants.map(p => {
+        const teamMembers = p.teamMembers ? p.teamMembers.join('; ') : '';
+        return `"${p.name}","${p.email}","${p.phone || ''}","${p.college}","${p.year}","${p.branch}","${getEventTitle(p.eventId)}","${p.teamName || ''}","${p.isTeamLeader ? 'Yes' : 'No'}","${teamMembers}","${p.status}","${new Date(p.registeredAt).toLocaleDateString()}"`;
+      }).join("\n");
     
     const link = document.createElement("a");
     link.setAttribute("href", encodeURI(csvContent));
@@ -154,16 +168,14 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
   const handleSaveEdit = async () => {
     if (editFormData) {
       try {
-        const response = await fetch(`/api/participants/${editFormData.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            status: editFormData.status,
-            team_name: editFormData.teamName
-          })
+        const result = await updateParticipantStatus(editFormData.id, {
+          status: editFormData.status,
+          team_name: editFormData.teamName
         });
 
-        if (!response.ok) throw new Error('Failed to update participant');
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to update participant');
+        }
 
         setParticipants(prev => prev.map(p => 
           p.id === editFormData.id ? editFormData : p
@@ -315,9 +327,23 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
                     <TableRow key={participant.id} className="border-neutral-800/50 hover:bg-neutral-800/30">
                       <TableCell>
                         <div>
-                          <p className="font-medium text-neutral-200">{participant.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-neutral-200">{participant.name}</p>
+                            {participant.isTeamLeader && (
+                              <Badge className="text-xs bg-amber-500/20 text-amber-400 border-amber-500/30">
+                                Leader
+                              </Badge>
+                            )}
+                          </div>
                           {participant.teamName && (
-                            <p className="text-xs text-neutral-400">Team: {participant.teamName}</p>
+                            <div className="mt-1">
+                              <p className="text-xs text-neutral-400">Team: {participant.teamName}</p>
+                              {participant.teamMembers && participant.teamMembers.length > 0 && (
+                                <p className="text-xs text-neutral-500">
+                                  {participant.teamMembers.length} member{participant.teamMembers.length !== 1 ? 's' : ''}
+                                </p>
+                              )}
+                            </div>
                           )}
                           {participant.skills && participant.skills.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-1">
@@ -464,12 +490,28 @@ export default function ParticipantManagement({ events }: ParticipantManagementP
               )}
               
               {selectedParticipant.teamName && (
-                <div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-400">Team Information</label>
-                  <p className="text-neutral-200">Team: {selectedParticipant.teamName}</p>
-                  {selectedParticipant.teamMembers && (
-                    <p className="text-neutral-400 text-sm">Members: {selectedParticipant.teamMembers.join(', ')}</p>
-                  )}
+                  <div className="p-3 bg-neutral-800/50 rounded-lg space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-neutral-200 font-medium">Team: {selectedParticipant.teamName}</p>
+                      {selectedParticipant.isTeamLeader && (
+                        <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
+                          Team Leader
+                        </Badge>
+                      )}
+                    </div>
+                    {selectedParticipant.teamMembers && selectedParticipant.teamMembers.length > 0 && (
+                      <div>
+                        <p className="text-neutral-400 text-sm mb-1">Team Members:</p>
+                        <div className="space-y-1">
+                          {selectedParticipant.teamMembers.map((member: string, idx: number) => (
+                            <p key={idx} className="text-neutral-300 text-sm pl-2">• {member}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               
