@@ -6,60 +6,67 @@ import Navbar from "@/components/Navbar";
 import Image from 'next/image';
 import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 
+const generalSecretary = {
+  name: "Ayaansh Churi",
+  role: "General Secretary",
+  description: "Leading Community of Coders with vision and dedication. Orchestrating initiatives to build a thriving tech community.",
+  image: "/Senate/Ayaansh_Churi.jpg",
+};
+
 const teamMembers = [
   {
-    name: "Alex Chen",
-    role: "Lead Developer",
-    description: "Turning coffee into code and dreams into reality. Specializes in architecting scalable solutions.",
-    image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Zoher Vohra",
+    role: "Joint General Secretary",
+    description: "Supporting community operations and fostering collaboration. Ensuring smooth execution of events and initiatives.",
+    image: "/Senate/Zoher_Vohra.jpg",
   },
   {
-    name: "Sarah Johnson",
-    role: "UI/UX Designer",
-    description: "Creating seamless experiences through intuitive design. Passionate about user-centered solutions.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Harsh Jagtap",
+    role: "Treasurer",
+    description: "Managing community finances and resources. Ensuring transparent budgeting for all technical events and activities.",
+    image: "/Senate/Harsh_Jagtap.jpg",
   },
   {
-    name: "Marcus Zhang",
-    role: "Backend Engineer",
-    description: "Database wizard and performance optimization specialist. Building robust systems that scale.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Soham Rane",
+    role: "CP Head",
+    description: "Leading competitive programming initiatives and contests. Mentoring students to excel in algorithmic problem-solving.",
+    image: "/Senate/Soham_Rane.jpg",
   },
   {
-    name: "Emma Davis",
-    role: "Product Manager",
-    description: "Bridging the gap between vision and execution. Turning ideas into impactful products.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Prathamesh Sankhe",
+    role: "Development Head",
+    description: "Driving web and app development projects. Empowering members to build real-world applications and learn modern tech stacks.",
+    image: "/Senate/Prathamesh_Sankhe.png",
   },
   {
-    name: "Ryan Patel",
-    role: "Frontend Developer",
-    description: "Crafting pixel-perfect interfaces with a focus on performance and accessibility.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Mudit Jain",
+    role: "X Head",
+    description: "Spearheading cross-domain initiatives, open-source contributions, and special projects. Bridging multiple technical verticals within the community.",
+    image: "/Senate/Mudit_Jain.jpg",
   },
   {
-    name: "Lisa Wong",
-    role: "DevOps Engineer",
-    description: "Automating the future, one pipeline at a time. Cloud infrastructure expert.",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Karan Shah",
+    role: "Eth Head",
+    description: "Leading blockchain and Web3 education initiatives. Building the next generation of decentralized application developers.",
+    image: "/Senate/Karan_Shah.jpg",
   },
   {
-    name: "James Foster",
-    role: "Security Specialist",
-    description: "Protecting our digital fortress. Making security accessible and implementable.",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Khush Agrawal",
+    role: "ML Head",
+    description: "Championing machine learning and AI projects. Conducting workshops and hackathons to democratize ML knowledge.",
+    image: "/Senate/Khush_Agrawal.jpg",
   },
   {
-    name: "Nina Rodriguez",
-    role: "Mobile Developer",
-    description: "Creating seamless mobile experiences. Passionate about cross-platform development.",
-    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Diksha Thongire",
+    role: "Design Head",
+    description: "Leading UI/UX design initiatives for community projects. Creating engaging visual experiences and brand identity.",
+    image: "/Senate/Diksha_Thongire.jpeg",
   },
   {
-    name: "David Kim",
-    role: "ML Engineer",
-    description: "Bringing AI solutions to real-world problems. Data scientist and algorithm specialist.",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    name: "Aarya Pandey",
+    role: "PR Head",
+    description: "Managing community outreach and communications. Building partnerships and promoting COC VJTI's technical achievements.",
+    image: "/Senate/Aarya_Pandey.jpg",
   },
 ];
 
@@ -78,6 +85,57 @@ const mentors = [
   },
   // Add more mentors as needed
 ];
+
+const MemberCard = ({ member, index }: { member: typeof teamMembers[0], index: number }) => (
+  <motion.div
+    className="relative group rounded-3xl overflow-hidden bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:14px_14px] backdrop-blur-sm border border-white/10"
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1 }}
+    whileHover={{ scale: 1.02 }}
+  >
+    <div className="p-8 flex flex-col items-center text-center space-y-4">
+      <motion.div
+        className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-green-400/20"
+        whileHover={{ scale: 1.05 }}
+        transition={{ type: "spring", stiffness: 300 }}
+      >
+        <Image
+          src={member.image}
+          alt={member.name}
+          width={128}
+          height={128}
+          className="w-full h-full object-cover"
+          style={{ objectPosition: member.name === 'Prathamesh Sankhe' ? '50% 15%' : member.name === 'Aarya Pandey' ? '50% 0%' : '50% 50%' }}
+        />
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="space-y-2"
+      >
+        <h3 className="text-xl font-semibold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+          {member.name}
+        </h3>
+        <p className="text-green-400 font-medium">
+          {member.role}
+        </p>
+        <p className="text-gray-400 text-sm">
+          {member.description}
+        </p>
+      </motion.div>
+
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+        initial={{ scaleX: 0 }}
+        whileHover={{ scaleX: 1 }}
+      />
+    </div>
+  </motion.div>
+);
 
 export default function TeamsPage() {
   return (
@@ -105,14 +163,6 @@ export default function TeamsPage() {
               <p className="text-2xl text-gray-400 max-w-3xl">
                 A collective of passionate developers, designers, and innovators building the future of technology
               </p>
-              {/* <div className="flex gap-4">
-                <button className="px-8 py-3 rounded-full bg-gradient-to-r from-green-400 to-emerald-600 text-white font-semibold hover:scale-105 transition-all">
-                  Join Our Team
-                </button>
-                <button className="px-8 py-3 rounded-full border border-green-400/20 text-green-400 hover:bg-green-400/10 transition-all">
-                  Learn More
-                </button>
-              </div> */}
             </motion.div>
           </motion.div>
         </div>
@@ -128,56 +178,18 @@ export default function TeamsPage() {
           >
             Core Team
           </motion.h2>
+          
+          {/* General Secretary - Centered */}
+          <div className="flex justify-center mb-12">
+            <div className="w-full max-w-md">
+              <MemberCard member={generalSecretary} index={0} />
+            </div>
+          </div>
+
+          {/* Other Team Members - 3x3 Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {teamMembers.map((member, index) => (
-              <motion.div
-                key={member.name}
-                className="relative group rounded-3xl overflow-hidden bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:14px_14px] backdrop-blur-sm border border-white/10"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <div className="p-8 flex flex-col items-center text-center space-y-4">
-                  <motion.div
-                    className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-green-400/20"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      width={128}
-                      height={128}
-                      className="w-full h-full object-cover"
-                    />
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="space-y-2"
-                  >
-                    <h3 className="text-xl font-semibold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                      {member.name}
-                    </h3>
-                    <p className="text-green-400 font-medium">
-                      {member.role}
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      {member.description}
-                    </p>
-                  </motion.div>
-
-                  <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                  />
-                </div>
-              </motion.div>
+              <MemberCard key={member.name} member={member} index={index + 1} />
             ))}
           </div>
         </div>
