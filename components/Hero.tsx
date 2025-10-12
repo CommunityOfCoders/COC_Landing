@@ -39,54 +39,8 @@ const Hero = () => {
             <span className="text-green-400"> Build the future of technology together.</span>
           </p>
           
-          <div className="flex items-center justify-center gap-6">
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-green-500/20 via-green-500/10 to-emerald-500/20 rounded-xl font-montserrat text-green-300 hover:text-green-200 hover:shadow-[0_0_30px_-5px] hover:shadow-green-500/30 transition-all border border-green-500/20"
-            >
-              Join the Community
-            </motion.button>
-            <motion.button 
-              whileHover={{ x: 5 }}
-              className="px-8 py-4 text-neutral-400 hover:text-green-300 font-montserrat transition-colors flex items-center gap-2"
-            >
-              Explore Projects
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="24" 
-                height="24" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-                className="w-4 h-4"
-              >
-                <path d="M5 12h14" />
-                <path d="m12 5 7 7-7 7" />
-              </svg>
-            </motion.button>
-          </div>
-
-          {/* Tech Stack Icons */}
-          <div className="mt-12 flex items-center justify-center gap-8 opacity-70">
-            {['React', 'Node.js', 'Python', 'AWS', 'Docker'].map((tech, index) => (
-              <motion.div
-                key={tech}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 + 0.5 }}
-                className="text-sm text-neutral-400 flex flex-col items-center gap-2"
-              >
-                <div className="w-12 h-12 rounded-lg bg-neutral-900/50 border border-neutral-800 flex items-center justify-center">
-                  {tech[0]}
-                </div>
-                <span>{tech}</span>
-              </motion.div>
-            ))}
-          </div>
+         
+         
         </motion.div>
       </div>
       <BackgroundBeams />

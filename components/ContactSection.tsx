@@ -34,7 +34,7 @@ export function ContactSection() {
                 <h3 className="text-xl font-semibold text-neutral-200 mb-2">Email Us</h3>
                 <p className="text-neutral-400 mb-4 text-sm">We&apos;ll respond within 24 hours</p>
                 <a href="mailto:contact@example.com" className="text-green-400 hover:text-green-300 transition-colors text-sm">
-                  contact@example.com
+                  communityofcoders@gmail.com
                 </a>
               </div>
             </div>

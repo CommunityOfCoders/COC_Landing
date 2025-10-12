@@ -72,16 +72,16 @@ const teamMembers = [
 
 const mentors = [
   {
-    quote: "Guiding the next generation of developers to build impactful solutions.",
-    name: "Jane Smith",
-    designation: "Technical Advisor at Google",
-    src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3",
+    quote: "It's been an incredible journey leading COC. Now, I'm excited to guide and support the next wave of innovators as they shape the future of our community.",
+    name: "Mohammed Bhadsorawala",
+    designation: "Former General Secretary & Community Manager, Community of Coders",
+    src: "/Senate/Mohammed.jpeg",
   },
   {
-    quote: "Empowering students with the tools and knowledge to innovate.",
-    name: "Michael Chen",
-    designation: "Senior Engineer at Microsoft",
-    src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=3560&auto=format&fit=crop&ixlib=rb-4.0.3",
+    quote: "Building a community isn't just about code—it's about creating a space where collaboration thrives and every member feels empowered to push boundaries.",
+    name: "Priyank Jhaveri",
+    designation: "Former Joint General Secretary, Community of Coders",
+    src: "/Senate/Priyank.jpeg",
   },
   // Add more mentors as needed
 ];
@@ -170,14 +170,7 @@ export default function TeamsPage() {
 
       <section className="py-24 relative">
         <div className="max-w-7xl mx-auto px-4">
-          <motion.h2 
-            className="text-4xl font-bold mb-16 text-center bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            Core Team
-          </motion.h2>
+         
           
           {/* General Secretary - Centered */}
           <div className="flex justify-center mb-12">

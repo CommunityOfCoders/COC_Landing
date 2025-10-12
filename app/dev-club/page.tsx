@@ -25,6 +25,7 @@ export default function DevClubPage() {
         />
         <FeaturesSectionDemo />
         {/* Other sections will go here */}
+        {/* <DevCore /> */}
       </main>
     </Suspense>
   );

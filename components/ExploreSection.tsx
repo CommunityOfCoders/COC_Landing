@@ -4,6 +4,7 @@ import { BentoGrid, BentoGridItem } from "./ui/bento-grid";
 // import { EvervaultCard, Icon } from "./ui/evervault-card";
 import { IconCode, IconBrain, IconRobot, IconDeviceGamepad2, IconBuildingCommunity, IconRocket } from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export function ExploreSection() {
   return (
@@ -23,18 +24,24 @@ export function ExploreSection() {
           </p>
         </motion.div>
 
-        <BentoGrid className="max-w-7xl mx-auto md:auto-rows-[20rem]">
-          {items.map((item, i) => (
-            <BentoGridItem
-              key={i}
-              title={item.title}
-              description={item.description}
-              header={item.header}
-              className={item.className}
-              icon={item.icon}
-            />
-          ))}
-        </BentoGrid>
+        import Link from "next/link";
+
+<BentoGrid className="max-w-7xl mx-auto md:auto-rows-[20rem]">
+  {items.map((item, i) => (
+    <div key={i} className={item.className}>
+      <Link href={item.href || "/"} className="block h-full w-full">
+        <BentoGridItem
+          title={item.title}
+          description={item.description}
+          header={item.header}
+          className="h-full"
+          icon={item.icon}
+        />
+      </Link>
+    </div>
+  ))}
+</BentoGrid>
+
       </div>
     </section>
   );
@@ -47,34 +54,39 @@ const items = [
     header: "DEV",
     className: "md:col-span-2 md:row-span-1",
     icon: <IconCode className="h-5 w-5 text-green-400" />,
+    href: "/dev-club",
   },
   {
-    title: "AI Group",
+    title: "AI & ML Society",
     description: "Explore the frontiers of artificial intelligence and machine learning.",
     header: "BRAIN",
     className: "md:col-span-1 md:row-span-1",
     icon: <IconBrain className="h-5 w-5 text-green-400" />,
+    href: "/ai-group",
   },
   {
     title: "Competitive Programming Team",
-    description: "Build and program the future of robotics. From concept to creation.",
-    header: "CP",
+    description: "Sharpen your algorithmic skills and compete in coding challenges worldwide.",
+    header: "CP CLUB",
     className: "md:col-span-1 md:row-span-1",
     icon: <IconRobot className="h-5 w-5 text-green-400" />,
+    href: "/cp-club",
   },
   {
     title: "Blockchain Dev Society",
-    description: "Create immersive gaming experiences that push boundaries.",
-    header: "ETH",
+    description: "Build decentralized applications and explore Web3 technologies.",
+    header: "ETH VJTI",
     className: "md:col-span-1 md:row-span-1",
     icon: <IconDeviceGamepad2 className="h-5 w-5 text-green-400" />,
+    href: "/eth-club",
   },
   {
-    title: "Open Source Hub",
+    title: "Open Source Community",
     description: "Contribute to the global open source community. Make an impact.",
-    header: "X",
+    header: "Project X",
     className: "md:col-span-1 md:row-span-1",
     icon: <IconBuildingCommunity className="h-5 w-5 text-green-400" />,
+    href: "/proj-x",
   },
   {
     title: "Community of Coders",
