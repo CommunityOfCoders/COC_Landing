@@ -4,15 +4,15 @@ import { motion } from "framer-motion";
 
 const teamMembers = [
   { name: "Prathamesh Sankhe", role: "Head" },
-  { name: "Harshal Kamble", role: "UI/UX Designer" },
-  { name: "Amal Verma", role: "UI/UX Designer" },
-  { name: "Ghruank Kothare", role: "UI/UX Designer" },
-  { name: "Ahaan Desai", role: "Frontend Developer" },
-  { name: "Ritesh Saindane", role: "Security Specialist" },
-  { name: "Dipesh Chavan", role: "Security Specialist" },
-  { name: "Kartikay Pandey", role: "Backend Engineer" },
-  { name: "Tanish Bhamre", role: "Product Manager" },
-  { name: "Shivraj Kolwankar", role: "Full Stack Developer" },
+  { name: "Harshal Kamble", role: "Core Member" },
+  { name: "Amal Verma", role: "Core Member" },
+  { name: "Ghruank Kothare", role: "Core Member" },
+  { name: "Ahaan Desai", role: "Core Member" },
+  { name: "Ritesh Saindane", role: "Core Member" },
+  { name: "Dipesh Chavan", role: "Core Member" },
+  { name: "Kartikay Pandey", role: "Core Member" },
+  { name: "Tanish Bhamre", role: "Core Member" },
+  { name: "Shivraj Kolwankar", role: "Core Member" },
 ];
 
 function DevCore({ embedded = false }: { embedded?: boolean }) {
@@ -129,3 +129,4 @@ function DevCore({ embedded = false }: { embedded?: boolean }) {
 }
 
 export default DevCore;
+
