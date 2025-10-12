@@ -180,7 +180,7 @@ export default function EventsPage() {
         </>
       )}
       
-      <div className="min-h-screen bg-black">
+      <div className="h-full bg-black overflow-y-auto">
         {/* Header */}
       <div className="border-b border-neutral-800/50 bg-neutral-900/30 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-6">
@@ -273,7 +273,18 @@ export default function EventsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Card className="bg-neutral-900/50 border-neutral-800 hover:border-emerald-500/50 transition-all h-full flex flex-col">
+                <Card className="bg-neutral-900/50 border-neutral-800 hover:border-emerald-500/50 transition-all h-full flex flex-col overflow-hidden">
+                  {/* Event Image */}
+                  {event.imageurl && (
+                    <div className="w-full h-48 overflow-hidden">
+                      <img 
+                        src={event.imageurl} 
+                        alt={event.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
                   <CardHeader>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex flex-wrap gap-2">
@@ -307,7 +318,7 @@ export default function EventsPage() {
                         <span>
                           {event.time}
                           {event.date ? (
-                            <span className="ml-2 text-neutral-400">· {format(parseISO(event.date), 'MMM dd')}</span>
+                            <span className="ml-2 text-neutral-400">· {format(parseISO(event.date), 'MMM dd, yyyy')}</span>
                           ) : null}
                         </span>
                       </div>

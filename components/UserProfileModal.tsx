@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import {
   Dialog,
   DialogContent,
@@ -13,8 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import { getCurrentUserProfile } from "@/app/actions/users";
+import { posthog } from "@/lib/posthog";
 
 interface UserProfile {
   name: string;
@@ -54,6 +55,11 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSignOut = async () => {
+    posthog.capture('sign_out_clicked', { location: 'profile_modal' });
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -129,7 +135,15 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
               </div>
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-between gap-3">
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
               <Button
                 onClick={() => onOpenChange(false)}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"

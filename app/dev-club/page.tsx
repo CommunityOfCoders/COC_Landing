@@ -17,15 +17,17 @@ export default function DevClubPage() {
     <Suspense fallback={<div>Loading...</div>}>
       <main className="min-h-screen bg-neutral-950">
         <Navbar />
-        <SectionHero
+        <div className="pt-16">
+          <SectionHero
           title="Dev Club"
           subtitle="Where Code Meets Innovation"
           description="Join a thriving community of developers who are passionate about crafting exceptional software solutions. From web applications to mobile experiences, we're building the digital future together."
           badges={badges}
         />
-        <FeaturesSectionDemo />
-        {/* Other sections will go here */}
-        {/* <DevCore /> */}
+          <FeaturesSectionDemo />
+          {/* Other sections will go here */}
+          {/* <DevCore /> */}
+        </div>
       </main>
     </Suspense>
   );

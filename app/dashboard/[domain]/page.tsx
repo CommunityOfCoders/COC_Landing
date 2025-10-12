@@ -38,7 +38,7 @@ export default function DomainPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+    <div className="h-full bg-black px-4 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-y-auto">
       <style jsx global>{`
         .resource-table-desktop table th:first-child,
         .resource-table-desktop table td:first-child {

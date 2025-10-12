@@ -18,7 +18,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <div className="flex bg-black">
       {/* Sidebar for large screens */}
       <div className="hidden lg:block fixed left-0 h-screen w-72 z-40">
         <Sidebar />
@@ -39,8 +39,8 @@ export default function DashboardLayout({
         <Menu className="w-5 h-5" />
       </button>
 
-      <div className="flex-1 lg:ml-72">
-        <main className="h-screen overflow-y-auto p-8">
+      <div className="flex-1 lg:ml-72 h-screen overflow-hidden">
+        <main className="h-full">
           {children}
         </main>
       </div>
