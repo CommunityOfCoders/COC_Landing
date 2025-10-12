@@ -115,6 +115,14 @@ body {
   border-radius: 4px;
 }
 
+html, body, #__next {
+  height: 100%;
+  margin: 0;
+  background-color: #000000;
+  color: #ffffff; /* optional: text color */
+}
+
+
 /* For Firefox */
 * {
   scrollbar-width: thin;

@@ -154,7 +154,7 @@ export default function EventCalendarView({ events, onEventClick }: EventCalenda
           {/* Day headers */}
           <div className="grid grid-cols-7 gap-2 mb-2">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="text-center text-sm font-semibold text-neutral-400 p-2">
+              <div key={day} className="text-center text-m font-semibold text-neutral-400 p-2">
                 {day}
               </div>
             ))}
@@ -177,7 +177,7 @@ export default function EventCalendarView({ events, onEventClick }: EventCalenda
                   key={day.toISOString()}
                   whileHover={{ scale: 1.02 }}
                   className={`
-                    aspect-square border rounded-lg p-2 transition-all cursor-pointer
+                    aspect-square border rounded-sm p-2 transition-all cursor-pointer
                     ${isCurrentDay 
                       ? 'border-emerald-500 bg-emerald-500/10' 
                       : 'border-neutral-800 hover:border-neutral-700 hover:bg-neutral-800/30'

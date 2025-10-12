@@ -158,7 +158,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black px-8 py-6">
+    <div className="min-h-screen bg-[#000000] px-8 py-6 overflow-x-hidden">
       {selectedEvent && (
         <>
           <TeamRegistrationModal
@@ -241,9 +241,9 @@ export default function Dashboard() {
                 <Link
                   key={domain.name}
                   href={`/dashboard/${domain.resources}`}
-                  className="w-full"
+                  className="w-full block min-w-0"
                 >
-                  <Card className="group relative w-full bg-neutral-900/50 border-neutral-800/50 p-6 hover:bg-neutral-800/50 transition-all duration-300 flex flex-col">
+                  <Card className="group relative w-full max-w-full min-w-0 bg-neutral-900/50 border-neutral-800/50 p-6 hover:bg-neutral-800/50 transition-all duration-300 flex flex-col">
                     <div className="flex items-start gap-4 flex-grow">
                       <div
                         className={cn(
@@ -254,7 +254,7 @@ export default function Dashboard() {
                       >
                         <domain.icon className="w-6 h-6 text-white" />
                       </div>
-                      <div className="flex flex-col flex-grow">
+                      <div className="flex flex-col flex-grow min-w-0">
                         <h3 className="text-lg font-semibold text-neutral-200 group-hover:text-white transition-colors">
                           {domain.name}
                         </h3>
