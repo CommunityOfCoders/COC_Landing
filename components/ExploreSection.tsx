@@ -24,8 +24,6 @@ export function ExploreSection() {
           </p>
         </motion.div>
 
-        import Link from "next/link";
-
 <BentoGrid className="max-w-7xl mx-auto md:auto-rows-[20rem]">
   {items.map((item, i) => (
     <div key={i} className={item.className}>
