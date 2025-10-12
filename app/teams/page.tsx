@@ -74,7 +74,7 @@ const mentors = [
   {
     quote: "It's been an incredible journey leading COC. Now, I'm excited to guide and support the next wave of innovators as they shape the future of our community.",
     name: "Mohammed Bhadsorawala",
-    designation: "Former General Secretary & Community Manager, Community of Coders",
+    designation: "Former General Secretary, Community of Coders",
     src: "/Senate/Mohammed.jpeg",
   },
   {
@@ -203,4 +203,5 @@ export default function TeamsPage() {
       </section>
     </div>
   );
+
 } 
