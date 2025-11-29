@@ -32,6 +32,7 @@ export interface Event {
   location: string;
   maxParticipants?: number;
   registrationstatus: registrationstatus;
+  registrationDeadline?: string;
   category: EventCategory;
   organizer: string;
   imageUrl: string; // Now required with default placeholder
@@ -87,6 +88,7 @@ export interface EventFormData {
   eventStatus?: EventStatus;
   isFeatured?: boolean;
   externalLink?: string;
+  registrationDeadline?: string;
 }
 
 export interface ParticipantStats {

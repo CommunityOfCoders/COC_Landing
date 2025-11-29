@@ -35,6 +35,8 @@ interface Event {
   location: string;
   maxparticipants: number;
   registrationstatus: string | boolean;
+  registration_deadline?: string;
+  event_status?: string;
   category: string;
   organizer: string;
   tags: string[];
@@ -145,15 +147,20 @@ export default function EventsPage() {
 
   const filteredEvents = events.filter((event) => {
     if (filter === "all") return true;
+    // Event status filters
+    if (filter === "upcoming" || filter === "ongoing" || filter === "completed") {
+      return event.event_status === filter;
+    }
+    // Registration status filter
     const isOpen = typeof event.registrationstatus === 'string' 
       ? event.registrationstatus === 'open' 
       : event.registrationstatus;
     if (filter === "open") return isOpen;
-    if (filter === "closed") return !isOpen;
+    // Category filters
     return event.category === filter;
   });
 
-  const categories = ["all", "open", "closed", "workshop", "hackathon", "seminar", "competition", "other"];
+  const categories = ["all", "upcoming", "ongoing", "completed", "open", "workshop", "hackathon", "seminar", "competition", "other"];
 
   return (
     <>
@@ -186,7 +193,7 @@ export default function EventsPage() {
         <div className="container mx-auto px-6 py-6">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
-              Upcoming Events
+              Events
             </h1>
             <p className="text-neutral-400 text-sm mt-2">
               Discover and register for events organized by COC
@@ -240,7 +247,7 @@ export default function EventsPage() {
                 ? event.registrationstatus.toLowerCase()
                 : 'closed';
               
-              const getStatusBadge = () => {
+              const getRegistrationBadge = () => {
                 switch (registrationstatus) {
                   case 'open':
                     return {
@@ -252,7 +259,7 @@ export default function EventsPage() {
                     return {
                       className: "border-blue-500/50 text-blue-400",
                       icon: <Clock className="w-3 h-3 mr-1" />,
-                      text: "Upcoming"
+                      text: "Coming Soon"
                     };
                   case 'closed':
                   default:
@@ -264,7 +271,37 @@ export default function EventsPage() {
                 }
               };
 
-              const statusBadge = getStatusBadge();
+              const getEventStatusBadge = () => {
+                switch (event.event_status) {
+                  case 'upcoming':
+                    return {
+                      className: "border-cyan-500/50 text-cyan-400 bg-cyan-500/10",
+                      text: "Upcoming"
+                    };
+                  case 'ongoing':
+                    return {
+                      className: "border-yellow-500/50 text-yellow-400 bg-yellow-500/10",
+                      text: "Ongoing"
+                    };
+                  case 'completed':
+                    return {
+                      className: "border-neutral-500/50 text-neutral-400 bg-neutral-500/10",
+                      text: "Completed"
+                    };
+                  case 'cancelled':
+                    return {
+                      className: "border-red-500/50 text-red-400 bg-red-500/10",
+                      text: "Cancelled"
+                    };
+                  default:
+                    return null;
+                }
+              };
+
+              const registrationBadge = getRegistrationBadge();
+              const eventStatusBadge = getEventStatusBadge();
+              const isCompleted = event.event_status === 'completed';
+              const isCancelled = event.event_status === 'cancelled';
               
               return (
               <motion.div
@@ -272,28 +309,49 @@ export default function EventsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
+                className={isCompleted || isCancelled ? 'opacity-70' : ''}
               >
-                <Card className="bg-neutral-900/50 border-neutral-800 hover:border-emerald-500/50 transition-all h-full flex flex-col overflow-hidden">
+                <Card className={`bg-neutral-900/50 border-neutral-800 hover:border-emerald-500/50 transition-all h-full flex flex-col overflow-hidden ${isCompleted ? 'grayscale-[30%]' : ''}`}>
                   {/* Event Image */}
                   {event.imageurl && (
-                    <div className="w-full h-48 overflow-hidden">
+                    <div className="relative w-full h-48 overflow-hidden">
                       <img 
                         src={event.imageurl} 
                         alt={event.title}
                         className="w-full h-full object-cover"
                       />
+                      {/* Event Status Badge on Image */}
+                      {eventStatusBadge && (
+                        <div className="absolute top-3 left-3">
+                          <Badge
+                            variant="outline"
+                            className={`${eventStatusBadge.className} backdrop-blur-sm`}
+                          >
+                            {eventStatusBadge.text}
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                   )}
                   
                   <CardHeader>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex flex-wrap gap-2">
+                        {/* Show event status if no image */}
+                        {!event.imageurl && eventStatusBadge && (
+                          <Badge
+                            variant="outline"
+                            className={eventStatusBadge.className}
+                          >
+                            {eventStatusBadge.text}
+                          </Badge>
+                        )}
                         <Badge
                           variant="outline"
-                          className={statusBadge.className}
+                          className={registrationBadge.className}
                         >
-                          {statusBadge.icon}
-                          {statusBadge.text}
+                          {registrationBadge.icon}
+                          {registrationBadge.text}
                         </Badge>
                         {isRegistered && (
                           <Badge variant="outline" className="border-blue-500/50 text-blue-400">

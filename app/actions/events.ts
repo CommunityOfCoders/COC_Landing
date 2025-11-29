@@ -9,6 +9,120 @@ type ActionResult<T = any> =
   | { success: true; data: T }
   | { success: false; error: string };
 
+// Helper function to calculate event status based on date
+function calculateEventStatus(eventDate: string | null, currentStatus: string): string {
+  // Don't change cancelled events
+  if (currentStatus === 'cancelled') return 'cancelled';
+  
+  if (!eventDate) return currentStatus || 'upcoming';
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const event = new Date(eventDate);
+  event.setHours(0, 0, 0, 0);
+  
+  const diffTime = event.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays > 0) return 'upcoming';
+  if (diffDays === 0) return 'ongoing';
+  return 'completed';
+}
+
+// Helper function to calculate registration status based on deadline, event date, and capacity
+function calculateRegistrationStatus(
+  eventDate: string | null,
+  registrationDeadline: string | null,
+  currentStatus: string,
+  participantCount: number,
+  maxParticipants: number
+): string {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Check if event has already passed
+  if (eventDate) {
+    const event = new Date(eventDate);
+    event.setHours(0, 0, 0, 0);
+    if (event < today) return 'closed';
+  }
+  
+  // Check if registration deadline has passed
+  if (registrationDeadline) {
+    const deadline = new Date(registrationDeadline);
+    deadline.setHours(23, 59, 59, 999); // End of deadline day
+    if (new Date() > deadline) return 'closed';
+  }
+  
+  // Check if capacity is full
+  if (maxParticipants && participantCount >= maxParticipants) return 'closed';
+  
+  // Check if registration deadline is in the future (registration is open)
+  if (registrationDeadline) {
+    const deadline = new Date(registrationDeadline);
+    deadline.setHours(0, 0, 0, 0);
+    if (deadline >= today) return 'open';
+  }
+  
+  // If no deadline set but event is in the future, consider it open
+  if (eventDate) {
+    const event = new Date(eventDate);
+    event.setHours(0, 0, 0, 0);
+    if (event >= today) return 'open';
+  }
+  
+  return currentStatus || 'upcoming';
+}
+
+// Helper function to auto-update event statuses in the database
+async function autoUpdateEventStatuses(events: any[]): Promise<any[]> {
+  const updates: { id: string; event_status?: string; registrationstatus?: string }[] = [];
+  
+  const updatedEvents = events.map((event) => {
+    const calculatedEventStatus = calculateEventStatus(event.date, event.event_status);
+    const calculatedRegStatus = calculateRegistrationStatus(
+      event.date,
+      event.registration_deadline,
+      event.registrationstatus,
+      event.participantcount || 0,
+      event.maxparticipants || 0
+    );
+    
+    const needsUpdate = 
+      calculatedEventStatus !== event.event_status || 
+      calculatedRegStatus !== event.registrationstatus;
+    
+    if (needsUpdate) {
+      updates.push({ 
+        id: event.id, 
+        event_status: calculatedEventStatus,
+        registrationstatus: calculatedRegStatus
+      });
+      return { 
+        ...event, 
+        event_status: calculatedEventStatus,
+        registrationstatus: calculatedRegStatus
+      };
+    }
+    return event;
+  });
+  
+  // Batch update events that need status changes
+  for (const update of updates) {
+    await supabaseAdmin
+      .from("events")
+      .update({ 
+        event_status: update.event_status,
+        registrationstatus: update.registrationstatus,
+        updated_at: new Date().toISOString() 
+      })
+      .eq("id", update.id);
+  }
+  
+  return updatedEvents;
+}
+
 // GET all events
 export async function getEvents(): Promise<ActionResult<any[]>> {
   try {
@@ -28,7 +142,10 @@ export async function getEvents(): Promise<ActionResult<any[]>> {
       return { success: false, error: "Failed to fetch events" };
     }
 
-    return { success: true, data: events };
+    // Auto-update event statuses based on date
+    const updatedEvents = await autoUpdateEventStatuses(events);
+
+    return { success: true, data: updatedEvents };
   } catch (error: any) {
     console.error("Error in getEvents:", error);
     return { success: false, error: "Internal server error" };
@@ -44,6 +161,7 @@ export async function createEvent(eventData: {
   location: string;
   maxParticipants?: number;
   registrationstatus?: string;
+  registrationDeadline?: string;
   category?: string;
   organizer?: string;
   tags?: string[];
@@ -95,7 +213,8 @@ export async function createEvent(eventData: {
           time: eventData.time,
           location: eventData.location,
           maxparticipants: eventData.maxParticipants || 100,
-          registrationstatus: eventData.registrationstatus || 'upcoming',
+          registrationstatus: eventData.registrationstatus || 'open',
+          registration_deadline: eventData.registrationDeadline || null,
           category: eventData.category || "workshop",
           organizer: eventData.organizer || "COC",
           tags: eventData.tags || [],
@@ -153,9 +272,42 @@ export async function updateEvent(eventId: string, updates: Partial<any>): Promi
       return { success: false, error: "Forbidden - Admin access required" };
     }
 
+    // Transform camelCase keys to snake_case for database columns
+    const dbUpdates: Record<string, any> = {};
+    const keyMap: Record<string, string> = {
+      maxParticipants: 'maxparticipants',
+      imageUrl: 'imageurl',
+      participantCount: 'participantcount',
+      teamEvent: 'team_event',
+      maxTeamSize: 'max_team_size',
+      minTeamSize: 'min_team_size',
+      eventStatus: 'event_status',
+      isFeatured: 'is_featured',
+      externalLink: 'external_link',
+      eventHighlights: 'event_highlights',
+      eventPhotos: 'event_photos',
+      attendanceCount: 'attendance_count',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      registrationDeadline: 'registration_deadline',
+    };
+
+    for (const [key, value] of Object.entries(updates)) {
+      // Skip undefined values and empty strings for optional fields
+      if (value === undefined) continue;
+      // Skip createdAt - it should not be updated
+      if (key === 'createdAt' || key === 'created_at') continue;
+      
+      const dbKey = keyMap[key] || key;
+      dbUpdates[dbKey] = value;
+    }
+
+    // Always update the updated_at timestamp
+    dbUpdates.updated_at = new Date().toISOString();
+
     const { data: event, error } = await supabaseAdmin
       .from("events")
-      .update(updates)
+      .update(dbUpdates)
       .eq("id", eventId)
       .select()
       .single();
@@ -242,6 +394,48 @@ export async function getEventById(eventId: string): Promise<ActionResult> {
     return { success: true, data: event };
   } catch (error: any) {
     console.error("Error in getEventById:", error);
+    return { success: false, error: "Internal server error" };
+  }
+}
+
+// GET featured events (Public - no auth required)
+export async function getFeaturedEvents(): Promise<ActionResult<any[]>> {
+  try {
+    const { data: events, error } = await supabaseAdmin
+      .from("events")
+      .select("*")
+      .eq("is_featured", true)
+      .order("date", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching featured events:", error);
+      return { success: false, error: "Failed to fetch featured events" };
+    }
+
+    // Auto-update event statuses based on date
+    const updatedEvents = await autoUpdateEventStatuses(events);
+
+    // Transform to camelCase for frontend
+    const transformedEvents = updatedEvents.map((event: any) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      maxParticipants: event.maxparticipants,
+      registrationStatus: event.registrationstatus,
+      eventStatus: event.event_status,
+      category: event.category,
+      organizer: event.organizer,
+      imageUrl: event.imageurl,
+      tags: event.tags || [],
+      externalLink: event.external_link,
+    }));
+
+    return { success: true, data: transformedEvents };
+  } catch (error: any) {
+    console.error("Error in getFeaturedEvents:", error);
     return { success: false, error: "Internal server error" };
   }
 }

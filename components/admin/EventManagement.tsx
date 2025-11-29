@@ -55,7 +55,8 @@ export default function EventManagement({
     minTeamSize: 1,
     eventStatus: "upcoming",
     isFeatured: false,
-    externalLink: ""
+    externalLink: "",
+    registrationDeadline: ""
   });
   const [eventHighlights, setEventHighlights] = useState<Array<{title: string; description: string; imageUrl?: string}>>([]); 
   const [newHighlight, setNewHighlight] = useState({title: "", description: "", imageUrl: ""});
@@ -95,7 +96,8 @@ export default function EventManagement({
       minTeamSize: 1,
       eventStatus: "upcoming",
       isFeatured: false,
-      externalLink: ""
+      externalLink: "",
+      registrationDeadline: ""
     });
     setNewTag("");
     setNewRequirement("");
@@ -119,7 +121,8 @@ export default function EventManagement({
       time: formData.time,
       location: formData.location,
       maxParticipants: formData.maxParticipants,
-      registrationstatus: "upcoming",
+      registrationstatus: "open",
+      registrationDeadline: formData.registrationDeadline || undefined,
       category: formData.category,
       organizer: "Admin",
       tags: formData.tags,
@@ -164,7 +167,8 @@ export default function EventManagement({
       minTeamSize: event.minTeamSize || 1,
       eventStatus: event.eventStatus || 'upcoming',
       isFeatured: event.isFeatured || false,
-      externalLink: event.externalLink || ''
+      externalLink: event.externalLink || '',
+      registrationDeadline: event.registrationDeadline || ''
     });
     setEventHighlights(event.eventHighlights || []);
     setEventPhotos(event.eventPhotos || []);
@@ -374,6 +378,24 @@ export default function EventManagement({
                       className="bg-neutral-800/50 border-neutral-700 text-neutral-200"
                       min="1"
                     />
+                  </div>
+                </div>
+
+                {/* Registration Deadline */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-300 mb-2">
+                      Registration Deadline
+                    </label>
+                    <Input
+                      type="date"
+                      value={formData.registrationDeadline || ""}
+                      onChange={(e) => setFormData(prev => ({ ...prev, registrationDeadline: e.target.value }))}
+                      className="bg-neutral-800/50 border-neutral-700 text-neutral-200"
+                    />
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Registration will auto-close after this date. Leave empty to keep open until event date.
+                    </p>
                   </div>
                 </div>
 

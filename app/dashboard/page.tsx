@@ -59,11 +59,9 @@ export default function Dashboard() {
       const result = await getEvents();
       
       if (result.success && result.data) {
-        // Filter upcoming and ongoing events only
+        // Filter to show only upcoming and ongoing events (event_status is auto-updated)
         const upcomingEvents = result.data.filter((event: any) => 
-          event.event_status !== 'completed' && 
-          event.event_status !== 'cancelled' &&
-          new Date(event.date) >= new Date()
+          event.event_status === 'upcoming' || event.event_status === 'ongoing'
         );
         
         const transformedEvents = upcomingEvents.map((event: any) => ({
