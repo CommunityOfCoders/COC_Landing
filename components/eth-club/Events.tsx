@@ -6,17 +6,24 @@ import { Icons } from "@/components/icons";
 
 const events = [
   {
-    title: "AI vs Human Kaggle Challenge",
+    title: "Blockchain based CTF",
     date: "CodeVerse 2025",
-    description: "Successfully conducted challenge that led to brainstorming of newer solutions in detecting AI generated text content",
+    description: "Capture the Flag competition focused on blockchain security challenges and smart contract vulnerabilities",
     location: "CodeVerse 2025",
     registration: "Completed"
   },
   {
-    title: "BrAIn Lecture Series",
-    date: "Annual",
-    description: "An annually conducted machine learning and data science lecture series + workshop for first years",
+    title: "Solidity Workshop",
+    date: "2025",
+    description: "Hands-on workshop covering Solidity programming, smart contract development, and best practices",
     location: "College Campus",
+    registration: "Completed"
+  },
+  {
+    title: "NFT Auction",
+    date: "CodeVerse 2025",
+    description: "Interactive NFT auction event showcasing blockchain technology and digital asset trading",
+    location: "CodeVerse 2025",
     registration: "Completed"
   }
 ];
@@ -33,7 +40,7 @@ export function Events() {
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">Events & Achievements</h2>
           <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
-            Join us for exciting ML events, workshops, and learning opportunities
+            Join us for exciting blockchain events, workshops, and learning opportunities
           </p>
         </motion.div>
 
@@ -49,8 +56,8 @@ export function Events() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center mb-1.5 md:mb-2">
-                      <Icons.calendar className="h-4 w-4 md:h-5 md:w-5 text-emerald-400 mr-1.5 md:mr-2" />
-                      <span className="text-emerald-400 text-sm md:text-base">{event.date}</span>
+                      <Icons.calendar className="h-4 w-4 md:h-5 md:w-5 text-green-400 mr-1.5 md:mr-2" />
+                      <span className="text-green-400 text-sm md:text-base">{event.date}</span>
                     </div>
                     <h3 className="text-lg md:text-xl font-semibold text-white mb-1.5 md:mb-2">{event.title}</h3>
                     <p className="text-gray-400 mb-3 md:mb-4 text-sm md:text-base">{event.description}</p>
@@ -63,7 +70,7 @@ export function Events() {
                     <button
                       className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg transition-colors text-sm md:text-base ${
                         event.registration === "Open"
-                          ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+                          ? "bg-green-500/20 text-green-300 hover:bg-green-500/30"
                           : event.registration === "Completed"
                           ? "bg-blue-500/20 text-blue-300"
                           : "bg-gray-500/20 text-gray-400 cursor-not-allowed"

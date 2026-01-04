@@ -16,7 +16,8 @@ import {
   BookOpen,
   Boxes,
   Home,
-  Calendar
+  Calendar,
+  Folder
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -28,13 +29,14 @@ const navLinks = [
   //   { name: 'Features', href: '/features', icon: Sparkles },
   { name: 'Teams', href: '/teams', icon: Users },
   //   { name: 'Community', href: '/community', icon: Users2 },
+  { name: 'Projects', href: '/projects', icon: Folder },
   { name: 'Home', href: '/', icon: BookOpen },
 ];
 
 const clubs = [
   { name: 'Dev Club', href: '/dev-club', icon: Code2 },
   { name: 'CP Club', href: '/cp-club', icon: Code2 },
-  { name: 'AI Group', href: '/ai-group', icon: Boxes },
+  { name: 'ML Club', href: '/ai-group', icon: Boxes },
   { name: 'ETH Club', href: '/eth-club', icon: Boxes },
   { name: 'Proj X', href: '/proj-x', icon: Code2 },
 ];

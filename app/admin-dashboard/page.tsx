@@ -6,12 +6,15 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Users, Settings, BarChart3 } from "lucide-react";
+import { Calendar, Users, Settings, BarChart3, Folder } from "lucide-react";
 import EventManagement from "@/components/admin/EventManagement";
 import ParticipantManagement from "@/components/admin/ParticipantManagement";
 import AdminStats from "@/components/admin/AdminStats";
+import ProjectManagement from "@/components/admin/ProjectManagement";
 import { Event, EventWithStats } from "@/types/events";
+import { Project } from "@/types/projects";
 import { getEvents, createEvent, updateEvent, deleteEvent } from "@/app/actions/events";
+import { getAllProjects } from "@/app/actions/projects";
 import { getCurrentUserProfile } from "@/app/actions/users";
 
 interface UserProfile {
@@ -26,6 +29,7 @@ interface UserProfile {
 export default function AdminDashboard() {
   const router = useRouter();
   const [events, setEvents] = useState<EventWithStats[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -33,6 +37,7 @@ export default function AdminDashboard() {
   // Fetch events and user profile from API
   useEffect(() => {
     fetchEventsData();
+    fetchProjectsData();
     fetchUserProfile();
   }, []);
 
@@ -91,6 +96,17 @@ export default function AdminDashboard() {
       console.error('Error fetching events:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProjectsData = async () => {
+    try {
+      const result = await getAllProjects();
+      if (result.success) {
+        setProjects(result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
     }
   };
 
@@ -228,7 +244,10 @@ export default function AdminDashboard() {
               <Users className="w-4 h-4" />
               <span>Participants</span>
             </TabsTrigger>
-            
+            <TabsTrigger value="projects" className="flex items-center space-x-2">
+              <Folder className="w-4 h-4" />
+              <span>Projects</span>
+            </TabsTrigger>
           </TabsList>
 
           <motion.div
@@ -262,6 +281,13 @@ export default function AdminDashboard() {
 
                 <TabsContent value="participants" className="space-y-6">
                   <ParticipantManagement events={events} />
+                </TabsContent>
+
+                <TabsContent value="projects" className="space-y-6">
+                  <ProjectManagement 
+                    projects={projects} 
+                    onRefresh={fetchProjectsData}
+                  />
                 </TabsContent>
               </>
             )}

@@ -54,7 +54,7 @@ const Navbar = () => {
   const clubs = [
     { name: 'Dev Club', href: '/dev-club', description: 'Software Development Community' },
     { name: 'CP Club', href: '/cp-club', description: 'Competitive Programming Hub' },
-    { name: 'AI Group', href: '/ai-group', description: 'Artificial Intelligence Research' },
+    { name: 'ML Club', href: '/ai-group', description: 'Machine Learning & AI Research' },
     { name: 'ETH Club', href: '/eth-club', description: 'Blockchain Development' },
     { name: 'Proj X', href: '/proj-x', description: 'Open Source Projects' },
   ];
@@ -76,6 +76,9 @@ const Navbar = () => {
             </Link>
             <Link href="/teams" className="text-gray-300 hover:text-green-400 transition-colors font-montserrat text-sm">
               Teams
+            </Link>
+            <Link href="/projects" className="text-gray-300 hover:text-green-400 transition-colors font-montserrat text-sm">
+              Projects
             </Link>
             
             
@@ -204,6 +207,14 @@ const Navbar = () => {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Teams
+                    </Link>
+                    
+                    <Link
+                      href="/projects"
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-neutral-800 hover:text-green-400"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Projects
                     </Link>
                     
                     <div className="border-t border-gray-700 my-1"></div>
