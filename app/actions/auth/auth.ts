@@ -21,8 +21,8 @@ export default async function auth(profile:any){
     }
 
     const dep:string = profile.email.split('@')[1].split('.')[0];
-    const match = profile.email.match(/b(\d+)@/);
-    let year = match ? parseInt(match[1]) + 2000 : null;
+    const match = profile.email.match(/_?b(\d+)@/);
+    let year = match ? parseInt(match[1], 10) + 2000 : null;
 
     // Insert Entry into tabble
     const {data:newUser,error:insertError} = await supabaseAdmin
