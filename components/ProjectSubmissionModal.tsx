@@ -15,8 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X, Plus, Trash2, Loader2 } from "lucide-react";
-import { ProjectCategory, ProjectSubmission, TeamMember } from "@/types/projects";
+import { X, Plus, Loader2 } from "lucide-react";
+import { ProjectCategory, ProjectSubmission } from "@/types/projects";
 import { submitProject } from "@/app/actions/projects";
 
 interface ProjectSubmissionModalProps {
@@ -33,6 +33,7 @@ export default function ProjectSubmissionModal({
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [currentTag, setCurrentTag] = useState("");
+  
   const [formData, setFormData] = useState<ProjectSubmission>({
     title: "",
     description: "",
@@ -44,14 +45,6 @@ export default function ProjectSubmissionModal({
     videoUrl: "",
     imageUrl: "",
     additionalImages: [],
-    teamName: "",
-    teamMembers: [],
-  });
-
-  const [currentMember, setCurrentMember] = useState<TeamMember>({
-    name: "",
-    role: "",
-    email: "",
   });
 
   const categories: { value: ProjectCategory; label: string }[] = [
@@ -84,23 +77,6 @@ export default function ProjectSubmissionModal({
     });
   };
 
-  const handleAddTeamMember = () => {
-    if (currentMember.name.trim() && currentMember.email.trim()) {
-      setFormData({
-        ...formData,
-        teamMembers: [...(formData.teamMembers || []), currentMember],
-      });
-      setCurrentMember({ name: "", role: "", email: "" });
-    }
-  };
-
-  const handleRemoveTeamMember = (index: number) => {
-    setFormData({
-      ...formData,
-      teamMembers: formData.teamMembers?.filter((_, i) => i !== index),
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -109,7 +85,7 @@ export default function ProjectSubmissionModal({
       return;
     }
 
-    if (!formData.title || !formData.description || !formData.category) {
+    if (!formData.title || !formData.description || !formData.category || !formData.githubUrl) {
       alert("Please fill in all required fields");
       return;
     }
@@ -145,7 +121,7 @@ export default function ProjectSubmissionModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -160,14 +136,14 @@ export default function ProjectSubmissionModal({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 border border-gray-800 rounded-lg shadow-2xl"
+          className="mt-20 relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-black border border-green-500/20 rounded-lg shadow-2xl shadow-green-900/10"
         >
           {/* Header */}
-          <div className="sticky top-0 bg-gray-900 border-b border-gray-800 p-6 flex items-center justify-between z-10">
-            <h2 className="text-2xl font-bold text-white">Submit Your Project</h2>
+          <div className="sticky top-0 bg-black border-b border-green-500/20 p-6 flex items-center justify-between z-10">
+            <h2 className="text-2xl font-bold text-green-400">Submit Your Project</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-gray-400 hover:text-green-400 transition-colors"
             >
               <X className="h-6 w-6" />
             </button>
@@ -178,21 +154,21 @@ export default function ProjectSubmissionModal({
             {/* Basic Info */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="title" className="text-white">
+                <Label htmlFor="title" className="text-green-100">
                   Project Title <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-zinc-900 border-green-500/20 text-white focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="My Awesome Project"
                   required
                 />
               </div>
 
               <div>
-                <Label htmlFor="category" className="text-white">
+                <Label htmlFor="category" className="text-green-100">
                   Category <span className="text-red-500">*</span>
                 </Label>
                 <Select
@@ -201,12 +177,12 @@ export default function ProjectSubmissionModal({
                     setFormData({ ...formData, category: value as ProjectCategory })
                   }
                 >
-                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectTrigger className="bg-zinc-900 border-green-500/20 text-white focus:ring-green-500/20">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectContent className="bg-zinc-900 border-green-500/20">
                     {categories.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white">
+                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-green-500/10 focus:bg-green-500/10 cursor-pointer">
                         {cat.label}
                       </SelectItem>
                     ))}
@@ -215,32 +191,32 @@ export default function ProjectSubmissionModal({
               </div>
 
               <div>
-                <Label htmlFor="description" className="text-white">
+                <Label htmlFor="description" className="text-green-100">
                   Short Description <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white min-h-[80px]"
+                  className="bg-zinc-900 border-green-500/20 text-white min-h-[80px] focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="A brief description of your project (max 200 characters)"
                   maxLength={200}
                   required
                 />
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   {formData.description.length}/200 characters
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="fullDescription" className="text-white">
+                <Label htmlFor="fullDescription" className="text-green-100">
                   Full Description
                 </Label>
                 <Textarea
                   id="fullDescription"
                   value={formData.fullDescription}
                   onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white min-h-[120px]"
+                  className="bg-zinc-900 border-green-500/20 text-white min-h-[120px] focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="Detailed description of your project, features, technologies used, etc."
                 />
               </div>
@@ -248,52 +224,55 @@ export default function ProjectSubmissionModal({
 
             {/* Links */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">Project Links</h3>
+              <h3 className="text-lg font-semibold text-green-400">Project Links</h3>
               
               <div>
-                <Label htmlFor="githubUrl" className="text-white">GitHub URL</Label>
+                <Label htmlFor="githubUrl" className="text-green-100">
+                  GitHub URL <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="githubUrl"
                   type="url"
                   value={formData.githubUrl}
                   onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-zinc-900 border-green-500/20 text-white focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="https://github.com/username/repo"
+                  required
                 />
               </div>
 
               <div>
-                <Label htmlFor="liveUrl" className="text-white">Live Demo URL</Label>
+                <Label htmlFor="liveUrl" className="text-green-100">Live Demo URL</Label>
                 <Input
                   id="liveUrl"
                   type="url"
                   value={formData.liveUrl}
                   onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-zinc-900 border-green-500/20 text-white focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="https://your-project.com"
                 />
               </div>
 
               <div>
-                <Label htmlFor="videoUrl" className="text-white">Video Demo URL</Label>
+                <Label htmlFor="videoUrl" className="text-green-100">Video Demo URL</Label>
                 <Input
                   id="videoUrl"
                   type="url"
                   value={formData.videoUrl}
                   onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-zinc-900 border-green-500/20 text-white focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="https://youtube.com/watch?v=..."
                 />
               </div>
 
               <div>
-                <Label htmlFor="imageUrl" className="text-white">Project Image URL</Label>
+                <Label htmlFor="imageUrl" className="text-green-100">Project Image URL</Label>
                 <Input
                   id="imageUrl"
                   type="url"
                   value={formData.imageUrl}
                   onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-zinc-900 border-green-500/20 text-white focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="https://example.com/image.png"
                 />
               </div>
@@ -301,32 +280,32 @@ export default function ProjectSubmissionModal({
 
             {/* Tags */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">Tags</h3>
+              <h3 className="text-lg font-semibold text-green-400">Tags</h3>
               <div className="flex gap-2">
                 <Input
                   value={currentTag}
                   onChange={(e) => setCurrentTag(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())}
-                  className="bg-gray-800 border-gray-700 text-white flex-1"
+                  className="bg-zinc-900 border-green-500/20 text-white flex-1 focus:border-green-500/50 focus:ring-green-500/20 placeholder:text-gray-500"
                   placeholder="Add a tag (e.g., React, Python, AI)"
                 />
                 <Button
                   type="button"
                   onClick={handleAddTag}
                   variant="outline"
-                  className="border-gray-700"
+                  className="border-green-500/20 bg-green-500/10 hover:bg-green-500/20 text-green-400 hover:text-green-300"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
               <div className="flex flex-wrap gap-2">
                 {formData.tags.map((tag, i) => (
-                  <Badge key={i} variant="secondary" className="bg-gray-800 text-gray-300">
+                  <Badge key={i} variant="secondary" className="bg-green-900/30 text-green-300 border border-green-500/20">
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="ml-2 hover:text-red-400"
+                      className="ml-2 hover:text-red-400 transition-colors"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -335,95 +314,20 @@ export default function ProjectSubmissionModal({
               </div>
             </div>
 
-            {/* Team Info */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">Team Information (Optional)</h3>
-              
-              <div>
-                <Label htmlFor="teamName" className="text-white">Team Name</Label>
-                <Input
-                  id="teamName"
-                  value={formData.teamName}
-                  onChange={(e) => setFormData({ ...formData, teamName: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
-                  placeholder="Team Awesome"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-white">Team Members</Label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                  <Input
-                    value={currentMember.name}
-                    onChange={(e) => setCurrentMember({ ...currentMember, name: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white"
-                    placeholder="Member Name"
-                  />
-                  <Input
-                    value={currentMember.role}
-                    onChange={(e) => setCurrentMember({ ...currentMember, role: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white"
-                    placeholder="Role (optional)"
-                  />
-                  <div className="flex gap-2">
-                    <Input
-                      type="email"
-                      value={currentMember.email}
-                      onChange={(e) => setCurrentMember({ ...currentMember, email: e.target.value })}
-                      className="bg-gray-800 border-gray-700 text-white flex-1"
-                      placeholder="Email"
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleAddTeamMember}
-                      variant="outline"
-                      className="border-gray-700"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                
-                {formData.teamMembers && formData.teamMembers.length > 0 && (
-                  <div className="space-y-2 mt-3">
-                    {formData.teamMembers.map((member, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-between bg-gray-800 p-3 rounded-lg"
-                      >
-                        <div className="text-sm text-white">
-                          <span className="font-semibold">{member.name}</span>
-                          {member.role && <span className="text-gray-400"> - {member.role}</span>}
-                          <div className="text-gray-400 text-xs">{member.email}</div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTeamMember(i)}
-                          className="text-red-400 hover:text-red-500"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
             {/* Submit Button */}
-            <div className="flex gap-3 pt-4 border-t border-gray-800">
+            <div className="flex gap-3 pt-4 border-t border-green-500/20">
               <Button
                 type="button"
                 onClick={onClose}
                 variant="outline"
-                className="flex-1 border-gray-700"
+                className="flex-1 border-green-500/20 bg-transparent text-gray-400 hover:text-white hover:bg-zinc-900"
                 disabled={loading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white"
                 disabled={loading}
               >
                 {loading ? (

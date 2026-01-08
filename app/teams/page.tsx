@@ -152,7 +152,7 @@ export default function TeamsPage() {
           >
             <h1 className="text-8xl font-bold">
               <span className="bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">Meet The</span>{' '}
-              <span className="bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent">Innovators</span>
+              <span className="bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent">Leaders</span>
             </h1>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -168,10 +168,9 @@ export default function TeamsPage() {
         </div>
       </section>
 
-      <section className="py-24 relative">
+      <section className="relative">
         <div className="max-w-7xl mx-auto px-4">
          
-          
           {/* General Secretary - Centered */}
           <div className="flex justify-center mb-12">
             <div className="w-full max-w-md">

@@ -17,7 +17,7 @@ export default async function auth(profile:any){
     }
 
     if(existingUser){
-        return {status: 'ok',user:existingUser};
+      return {status: 'ok',user:existingUser};
     }
 
     const dep:string = profile.email.split('@')[1].split('.')[0];

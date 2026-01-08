@@ -1,12 +1,10 @@
 import Navbar from "@/components/Navbar";
-import { SectionHero } from "@/components/sections/SectionHero";
-import { AboutSection } from "./sections/about-section";
-import AchievementsSection from "./sections/acheivements-section";
-import { Events } from "./sections/events-section";
-import { ResourcesSection } from "./sections/resources-section";
-import { TeamSection } from "./sections/teams-section";
+import { AboutSection } from "../../components/cp-club/sections/about-section";
+import AchievementsSection from "../../components/cp-club/sections/acheivements-section";
+import { Events } from "../../components/cp-club/sections/events-section";
+import { TeamSection } from "../../components/cp-club/sections/teams-section";
 import { Suspense } from "react";
-import { HeroSection } from "./sections/hero-section";
+import HeroSection from "../../components/cp-club/sections/hero-section";
 
 export default function CpClubPage() {
 
