@@ -11,8 +11,8 @@ export default function Home() {
     <main className="min-h-screen bg-black">
       <Navbar />
       <Hero />
-      <FeaturedEventsSection />
-      <AboutSection />
+      {/* <FeaturedEventsSection /> */}
+      {/* <AboutSection /> */}
       <ExploreSection />
       <AchievementsSection />
       <ContactSection />

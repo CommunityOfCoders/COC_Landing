@@ -61,6 +61,21 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
     posthog.capture('sign_out_clicked', { location: 'profile_modal' });
     await signOut({ callbackUrl: '/' });
   };
+  const getYearOfStudy = (admissionYear: number) => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0 = Jan, 6 = July
+
+    let yearStudy = currentYear - admissionYear;
+
+    // If we are past June (July onwards), they have moved to the next year
+    // e.g. In Aug 2026, a 2023 batch student starts their 4th year
+    if (currentMonth >= 6) {
+      yearStudy += 1;
+    }
+
+    return yearStudy;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -102,12 +117,27 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
                 </div>
               </div>
 
-              <div className="space-y-2">
+                <div className="space-y-2">
                 <Label className="text-neutral-200">Branch</Label>
                 <div className="px-3 py-2 bg-neutral-900/50 border border-neutral-800 rounded-md text-neutral-300">
-                  {profile?.branch || "Not set"}
+                  {(() => {
+                  const dep = profile?.branch;
+                  if (!dep) return "Not set";
+                  const map: Record<string, string> = {
+                    it: "Information Technology",
+                    ce: "Computer Engineering",
+                    el: "Electronics",
+                    ee: "Electrical",
+                    tx: "Textile",
+                    et: "Electronics and Telecommunication",
+                    pe: "Production",
+                    me: "Mechanical",
+                    ci: "Civil",
+                  };
+                  return map[dep.toLowerCase()] || dep;
+                  })()}
                 </div>
-              </div>
+                </div>
 
               <div className="space-y-2">
                 <Label className="text-neutral-200">Year</Label>
@@ -120,17 +150,23 @@ export function UserProfileModal({ open, onOpenChange }: UserProfileModalProps) 
                       </span>
                     </span>
                   ) : profile?.year ? (
-                    profile.year === 1 ? "First Year" :
-                    profile.year === 2 ? "Second Year" :
-                    profile.year === 3 ? "Third Year" :
-                    profile.year === 4 ? "Fourth Year" :
-                    `Year ${profile.year}`
+                    (() => {
+                      const yearOfStudy = getYearOfStudy(profile.year);
+
+                      // Handle Logic
+                      if (yearOfStudy > 4) return "Graduated (Alumni)"; // Or handle as > 4th Year
+                      if (yearOfStudy === 1) return "First Year";
+                      if (yearOfStudy === 2) return "Second Year";
+                      if (yearOfStudy === 3) return "Third Year";
+                      if (yearOfStudy === 4) return "Fourth Year";
+                      return `Year ${yearOfStudy}`; // Fallback
+                    })()
                   ) : "Not set"}
                 </div>
                 <p className="text-xs text-neutral-500 mt-1">
-                  {profile?.graduated 
-                    ? "You have graduated from the program" 
-                    : "Year is automatically updated every July"}
+                  {profile?.graduated
+                    ? "You have graduated from the program"
+                    : `Based on batch of ${profile?.year}. Auto-updates in July.`}
                 </p>
               </div>
             </div>

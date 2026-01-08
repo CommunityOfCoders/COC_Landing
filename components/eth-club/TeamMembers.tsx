@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const team = [
   {
     name: "Karan Shah",
-    role: "ETH Lead",
+    role: "ETH Head",
     expertise: "Blockchain & Web3",
   },
   {

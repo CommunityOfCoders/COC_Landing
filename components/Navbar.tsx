@@ -75,7 +75,7 @@ const Navbar = () => {
               About
             </Link>
             <Link href="/teams" className="text-gray-300 hover:text-green-400 transition-colors font-montserrat text-sm">
-              Teams
+              Team
             </Link>
             <Link href="/projects" className="text-gray-300 hover:text-green-400 transition-colors font-montserrat text-sm">
               Projects

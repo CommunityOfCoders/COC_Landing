@@ -18,33 +18,34 @@ const Hero = () => {
               Community of
             </span>
             <br />
-            <span className="bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.green.300),theme(colors.green.100),theme(colors.emerald.400))] leading-none">
+            <span className="bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.green.400),theme(colors.green.100),theme(colors.emerald.400))] leading-none">
               Coders
             </span>
           </h1>
-          
-          <div className="flex items-center justify-center gap-4">
+
+          <div className="flex flex-wrap items-center justify-center gap-4 cursor-pointer">
             {['Innovate', 'Create', 'Collaborate'].map((text) => (
-              <span 
-                key={text}
-                className="text-sm text-neutral-300 px-4 py-2 border border-neutral-700/50 rounded-full"
-              >
-                {text}
-              </span>
+              <div key={text} className="relative group p-[2px] rounded-full bg-gradient-to-r from-transparent via-green-500/20 to-transparent hover:via-green-500/60 transition-all duration-500">
+                <div className="px-6 py-2 rounded-full bg-black relative z-10 flex items-center justify-center">
+                  <span className="text-md font-medium bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent group-hover:from-white group-hover:to-green-200 transition-all">
+                    {text}
+                  </span>
+                </div>
+              </div>
             ))}
           </div>
 
           <p className="text-neutral-300 max-w-2xl mx-auto text-lg font-montserrat leading-relaxed">
-            Join an exclusive community of innovative developers where ideas transform into reality. 
+            Join an exclusive community of innovative developers where ideas transform into reality.
             <span className="text-green-400"> Build the future of technology together.</span>
           </p>
-          
-         
-         
+
+
+
         </motion.div>
       </div>
       <BackgroundBeams />
-      
+
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/0 z-[5]" />
     </div>
   );

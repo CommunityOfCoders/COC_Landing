@@ -27,10 +27,10 @@ import { UserProfileModal } from "./UserProfileModal";
 const navLinks = [
   //   { name: 'About', href: '/about', icon: Info },
   //   { name: 'Features', href: '/features', icon: Sparkles },
-  { name: 'Teams', href: '/teams', icon: Users },
+  { name: 'Home', href: '/', icon: BookOpen },
+  { name: 'Team', href: '/teams', icon: Users },
   //   { name: 'Community', href: '/community', icon: Users2 },
   { name: 'Projects', href: '/projects', icon: Folder },
-  { name: 'Home', href: '/', icon: BookOpen },
 ];
 
 const clubs = [

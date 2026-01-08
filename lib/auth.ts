@@ -18,12 +18,19 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ account, profile, user }) {
+      console.log('SignIn attempt for:', profile?.email);
+
       if (account?.provider === "google" && profile?.email) {
         // Check if email ends with .vjti.ac.in
         if (!profile.email.endsWith('.vjti.ac.in')) {
           return false;
         }
-
+        //extract dep and year from email
+        const dep = profile.email.split('@')[1].split('.')[0]; 
+        const match = profile.email.match(/_?b(\d+)@/); 
+        const year = match ? parseInt(match[1], 10) + 2000 : null;
+        
+        // console.log(`Extracted department: ${dep}, year: ${year} from email: ${profile.email}`);
         // Sync user to Supabase
         try {
           const { data: existingUser } = await supabaseAdmin
@@ -40,7 +47,8 @@ export const authOptions: NextAuthOptions = {
                 email: profile.email,
                 name: profile.name || user.name,
                 picture: profile.image || user.image,
-                year: 1, // Default year
+                branch:dep,
+                year: year, 
                 is_admin: 0, // Explicitly set to 0, can only be changed via Supabase
               }]);
           } else {
@@ -50,6 +58,8 @@ export const authOptions: NextAuthOptions = {
               .update({
                 name: profile.name || user.name,
                 picture: profile.image || user.image,
+                branch:dep,
+                year: year, 
               })
               .eq('email', profile.email);
           }

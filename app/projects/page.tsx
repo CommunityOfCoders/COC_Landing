@@ -160,11 +160,13 @@ export default function ProjectsShowcase() {
             {session && (
               <Button
                 onClick={() => setSubmissionModalOpen(true)}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-6 text-lg"
+                size="lg"
+                className={`bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold px-8 py-6 text-lg rounded-2xl shadow-lg hover:shadow-white/10 hover:scale-105 transition-all duration-300`}
               >
-                <Plus className="mr-2 h-5 w-5" />
-                Submit Your Project
+                Submit Your Project 
+                <Plus className="ml-2 h-5 w-5" />
               </Button>
+              
             )}
           </motion.div>
         </div>

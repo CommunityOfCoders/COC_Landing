@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export function ExploreSection() {
   return (
-    <section className="py-20 bg-neutral-950">
+    <section className="pt-10 bg-neutral-950">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -24,21 +24,21 @@ export function ExploreSection() {
           </p>
         </motion.div>
 
-<BentoGrid className="max-w-7xl mx-auto md:auto-rows-[20rem]">
-  {items.map((item, i) => (
-    <div key={i} className={item.className}>
-      <Link href={item.href || "/"} className="block h-full w-full">
-        <BentoGridItem
-          title={item.title}
-          description={item.description}
-          header={item.header}
-          className="h-full"
-          icon={item.icon}
-        />
-      </Link>
-    </div>
-  ))}
-</BentoGrid>
+        <BentoGrid className="max-w-7xl mx-auto md:auto-rows-[20rem]">
+          {items.map((item, i) => (
+            <div key={i} className={item.className}>
+              <Link href={item.href || "/"} className="block h-full w-full">
+                <BentoGridItem
+                  title={item.title}
+                  description={item.description}
+                  header={item.header}
+                  className="h-full"
+                  icon={item.icon}
+                />
+              </Link>
+            </div>
+          ))}
+        </BentoGrid>
 
       </div>
     </section>
