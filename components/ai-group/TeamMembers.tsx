@@ -9,7 +9,7 @@ const team = [
     expertise: "Machine Learning & AI",
   },
   {
-    name: "Adwaita Patane",
+    name: "Rupak Gupta",
     role: "Core Team",
     expertise: "Machine Learning & AI",
   },
@@ -20,11 +20,6 @@ const team = [
   },
   {
     name: "Kevin Shah",
-    role: "Core Team",
-    expertise: "Machine Learning & AI",
-  },
-  {
-    name: "Ninad Shegokar",
     role: "Core Team",
     expertise: "Machine Learning & AI",
   },

@@ -6,20 +6,22 @@ import Navbar from "@/components/Navbar";
 import Image from 'next/image';
 import { AnimatedTestimonials } from "@/components/ui/animated-testimonials";
 
-const generalSecretary = {
-  name: "Ayaansh Churi",
-  role: "General Secretary",
-  description: "Leading Community of Coders with vision and dedication. Orchestrating initiatives to build a thriving tech community.",
-  image: "/Senate/Ayaansh_Churi.jpg",
-};
+const generalSecretary =   {
+    name: "Zoher Vohra",
+    role: "General Secretary",
+    description: "Leading Community of Coders with vision and dedication. Orchestrating initiatives to build a thriving tech community.",
+    image: "/Senate/Zoher_Vohra.jpg",
+  };
+
 
 const teamMembers = [
   {
-    name: "Zoher Vohra",
-    role: "Joint General Secretary",
-    description: "Supporting community operations and fostering collaboration. Ensuring smooth execution of events and initiatives.",
-    image: "/Senate/Zoher_Vohra.jpg",
-  },
+  name: "Ayaansh Churi",
+  role: "Joint General Secretary",
+  description: "Supporting community operations and fostering collaboration. Ensuring smooth execution of events and initiatives.",
+  image: "/Senate/Ayaansh_Churi.jpg",
+}
+,
   {
     name: "Harsh Jagtap",
     role: "Treasurer",
@@ -42,7 +44,7 @@ const teamMembers = [
     name: "Mudit Jain",
     role: "X Head",
     description: "Spearheading cross-domain initiatives, open-source contributions, and special projects. Bridging multiple technical verticals within the community.",
-    image: "/Senate/Mudit_Jain.jpg",
+    image: "/Senate/Mudit_Jain.jpeg",
   },
   {
     name: "Karan Shah",
@@ -63,10 +65,10 @@ const teamMembers = [
     image: "/Senate/Diksha_Thongire.jpeg",
   },
   {
-    name: "Aarya Pandey",
+    name: "Kartik Lande",
     role: "PR Head",
     description: "Managing community outreach and communications. Building partnerships and promoting COC VJTI's technical achievements.",
-    image: "/Senate/Aarya_Pandey.jpg",
+    image: "/Senate/Kartik_Lande.jpeg",
   },
 ];
 

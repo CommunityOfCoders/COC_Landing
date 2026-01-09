@@ -736,21 +736,30 @@ export default function EventManagement({
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <h3 className="text-lg font-semibold text-neutral-200">{event.title}</h3>
-                        <select
-                          value={event.registrationstatus}
-                          onChange={(e) => onUpdateEvent(event.id, { registrationstatus: e.target.value as Event['registrationstatus'] })}
-                          className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer border-0 ${
-                            event.registrationstatus === 'open' 
-                              ? 'bg-emerald-500/20 text-emerald-300' 
-                              : event.registrationstatus === 'upcoming'
-                              ? 'bg-blue-500/20 text-blue-300'
-                              : 'bg-gray-500/20 text-gray-300'
+                        <Badge
+                          className={`${
+                            event.eventStatus === 'upcoming' 
+                              ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' 
+                              : event.eventStatus === 'ongoing'
+                              ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'
+                              : event.eventStatus === 'completed'
+                              ? 'bg-green-500/20 text-green-300 border-green-500/30'
+                              : 'bg-red-500/20 text-red-300 border-red-500/30'
                           }`}
                         >
-                          <option value="upcoming">upcoming</option>
-                          <option value="open">open</option>
-                          <option value="closed">closed</option>
-                        </select>
+                          {event.eventStatus || 'upcoming'}
+                        </Badge>
+                        <Badge
+                          className={`${
+                            event.registrationstatus === 'open' 
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
+                              : event.registrationstatus === 'upcoming'
+                              ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                              : 'bg-gray-500/20 text-gray-300 border-gray-500/30'
+                          }`}
+                        >
+                          Reg: {event.registrationstatus || 'upcoming'}
+                        </Badge>
                         <Badge variant="outline" className="border-neutral-600 text-neutral-300">
                           {event.category}
                         </Badge>
