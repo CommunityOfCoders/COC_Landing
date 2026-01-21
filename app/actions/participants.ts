@@ -107,11 +107,16 @@ export async function registerForEvent(registration: {
       return { success: false, error: "Event not found" };
     }
 
-    if (!event.registrationstatus) {
-      return { success: false, error: "Event registration is closed" };
+    // Check if registration is open (must be exactly 'open', not 'closed' or 'upcoming')
+    const registrationStatus = typeof event.registrationstatus === 'string' 
+      ? event.registrationstatus.toLowerCase() 
+      : '';
+    
+    if (registrationStatus !== 'open') {
+      return { success: false, error: "Event registration is not open" };
     }
 
-    if (event.participantcount >= event.maxparticipants) {
+    if (event.maxparticipants && event.participantcount >= event.maxparticipants) {
       return { success: false, error: "Event is full" };
     }
 
