@@ -47,7 +47,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.469.0",
     "mini-svg-data-uri": "^1.4.4",
-    "next": "^14.2.22",
+    "next": "14.2.35",
     "next-auth": "^4.24.11",
     "posthog-js": "^1.203.2",
     "react": "^18",
