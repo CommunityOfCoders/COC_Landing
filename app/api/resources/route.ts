@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-export const runtime = 'edge';
+// Removed edge runtime for OpenNext Cloudflare compatibility
+// export const runtime = 'edge';
 
 const resources = {
   "cp": [],

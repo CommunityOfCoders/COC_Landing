@@ -3,7 +3,7 @@ compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2026-02-01"
 
 [build]
-command = "npx @cloudflare/next-on-pages@1 --webpack"
+command = "npm run build && npx @opennextjs/cloudflare build"
 
 [vars]
 NODE_VERSION = "22"
