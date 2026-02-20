@@ -18,18 +18,21 @@ export const AnimatedList = React.memo(
     );
 
     useEffect(() => {
-      if (index < childrenArray.length - 1) {
-        const timeout = setTimeout(() => {
-          setIndex((prevIndex) => prevIndex + 1);
-        }, delay);
+      const timeout = setTimeout(() => {
+        setIndex((prevIndex) => (prevIndex + 1) % childrenArray.length);
+      }, delay);
 
-        return () => clearTimeout(timeout);
-      }
+      return () => clearTimeout(timeout);
     }, [index, delay, childrenArray.length]);
 
     const itemsToShow = useMemo(() => {
-      const result = childrenArray.slice(0, index + 1).reverse();
-      return result;
+      const windowSize = 6;
+      const start = index % childrenArray.length;
+      const result = [];
+      for (let i = 0; i < windowSize; i++) {
+        result.push(childrenArray[(start + i) % childrenArray.length]);
+      }
+      return result.reverse();
     }, [index, childrenArray]);
 
     return (

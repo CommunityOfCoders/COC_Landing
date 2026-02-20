@@ -4,13 +4,15 @@ import { AboutSection } from "@/components/AboutSection";
 import { ExploreSection } from "@/components/ExploreSection";
 import { AchievementsSection } from "@/components/AchievementsSection";
 import { ContactSection } from "@/components/ContactSection";
+import { FeaturedEventsSection } from "@/components/FeaturedEventsSection";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-black">
       <Navbar />
       <Hero />
-      <AboutSection />
+      {/* <FeaturedEventsSection /> */}
+      {/* <AboutSection /> */}
       <ExploreSection />
       <AchievementsSection />
       <ContactSection />

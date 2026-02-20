@@ -6,25 +6,18 @@ import { Icons } from "@/components/icons";
 
 const events = [
   {
-    title: "AI Workshop Series",
-    date: "January 15, 2024",
-    description: "Hands-on workshop on implementing neural networks from scratch",
-    location: "Virtual",
-    registration: "Open"
+    title: "AI vs Human Kaggle Challenge",
+    date: "CodeVerse 2025",
+    description: "Successfully conducted challenge that led to brainstorming of newer solutions in detecting AI generated text content",
+    location: "CodeVerse 2025",
+    registration: "Completed"
   },
   {
-    title: "Research Symposium",
-    date: "February 1, 2024",
-    description: "Presenting latest research in computer vision and NLP",
-    location: "Main Auditorium",
-    registration: "Coming Soon"
-  },
-  {
-    title: "AI Hackathon",
-    date: "March 10, 2024",
-    description: "48-hour hackathon focused on AI solutions for real-world problems",
-    location: "Innovation Hub",
-    registration: "Coming Soon"
+    title: "BrAIn Lecture Series",
+    date: "Annual",
+    description: "An annually conducted machine learning and data science lecture series + workshop for first years",
+    location: "College Campus",
+    registration: "Completed"
   }
 ];
 
@@ -38,9 +31,9 @@ export function Events() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">Upcoming Events</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">Events & Achievements</h2>
           <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
-            Join us for exciting AI events, workshops, and learning opportunities
+            Join us for exciting ML events, workshops, and learning opportunities
           </p>
         </motion.div>
 
@@ -71,6 +64,8 @@ export function Events() {
                       className={`px-3 md:px-4 py-1.5 md:py-2 rounded-lg transition-colors text-sm md:text-base ${
                         event.registration === "Open"
                           ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+                          : event.registration === "Completed"
+                          ? "bg-blue-500/20 text-blue-300"
                           : "bg-gray-500/20 text-gray-400 cursor-not-allowed"
                       }`}
                     >

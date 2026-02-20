@@ -108,30 +108,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteSchema)
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationSchema)
-          }}
-        />
+      <link rel="icon" href="/coc_vjti.jpeg" />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+        __html: JSON.stringify(websiteSchema)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+        __html: JSON.stringify(organizationSchema)
+        }}
+      />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} antialiased`}
       >
-        <NextAuthProvider>
-          <PostHogProvider>
-            <PostHogPageview />
-            {children}
-          </PostHogProvider>
-        </NextAuthProvider>
+      <NextAuthProvider>
+        <PostHogProvider>
+        <PostHogPageview />
+        {children}
+        </PostHogProvider>
+      </NextAuthProvider>
       </body>
     </html>
   );

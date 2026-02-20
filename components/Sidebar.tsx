@@ -1,75 +1,91 @@
 "use client";
 
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { domains } from "@/config/navigation";
-import { 
-  LayoutDashboard, 
-//   Info, 
-//   Sparkles, 
-  Users, 
-  Code2, 
-//   Users2, 
+import {
+  LayoutDashboard,
+  //   Info, 
+  //   Sparkles, 
+  Users,
+  Code2,
+  //   Users2, 
   BookOpen,
-  Boxes 
+  Boxes,
+  Home,
+  Calendar,
+  Folder
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserProfileModal } from "./UserProfileModal";
 
 const navLinks = [
-//   { name: 'About', href: '/about', icon: Info },
-//   { name: 'Features', href: '/features', icon: Sparkles },
-  { name: 'Teams', href: '/teams', icon: Users },
-//   { name: 'Community', href: '/community', icon: Users2 },
+  //   { name: 'About', href: '/about', icon: Info },
+  //   { name: 'Features', href: '/features', icon: Sparkles },
   { name: 'Home', href: '/', icon: BookOpen },
+  { name: 'Team', href: '/teams', icon: Users },
+  //   { name: 'Community', href: '/community', icon: Users2 },
+  { name: 'Projects', href: '/projects', icon: Folder },
 ];
 
 const clubs = [
   { name: 'Dev Club', href: '/dev-club', icon: Code2 },
   { name: 'CP Club', href: '/cp-club', icon: Code2 },
-  { name: 'AI Group', href: '/ai-group', icon: Boxes },
+  { name: 'ML Club', href: '/ai-group', icon: Boxes },
   { name: 'ETH Club', href: '/eth-club', icon: Boxes },
   { name: 'Proj X', href: '/proj-x', icon: Code2 },
 ];
 
-export function Sidebar() {
+export function Sidebar({ onLinkClick }: { onLinkClick?: () => void }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const isLoading = status === "loading";
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   return (
-    <aside className="fixed left-0 flex h-screen w-72 flex-col border-r border-neutral-800 bg-black/95 backdrop-blur-xl">
-      <div className="flex flex-col p-8">
-        <div className="flex items-center gap-4">
-          {isLoading ? (
-            <>
-              <Skeleton className="h-10 w-10 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-3 w-16" />
-              </div>
-            </>
-          ) : (
-            <>
-              <Avatar className="h-10 w-10 ring-2 ring-emerald-500/20">
-                <AvatarImage src={session?.user?.image || ""} />
-                <AvatarFallback className="bg-emerald-950 text-emerald-200">
-                  {session?.user?.name?.[0].toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="font-medium text-neutral-200">
-                  {session?.user?.name?.split(" ")[0]}
-                </span>
-                <span className="text-xs text-neutral-500">VJTI Student</span>
-              </div>
-            </>
-          )}
+    <>
+      <UserProfileModal 
+        open={isProfileModalOpen} 
+        onOpenChange={setIsProfileModalOpen}
+      />
+      
+      <aside className="flex h-screen w-full lg:w-72 flex-col border-r border-neutral-800 bg-black/95 backdrop-blur-xl shadow-lg">
+        <div className="flex flex-col p-8">
+          <div 
+            className="flex items-center gap-4 cursor-pointer hover:bg-neutral-800/30 rounded-lg p-2 -m-2 transition-colors"
+            onClick={() => setIsProfileModalOpen(true)}
+          >
+            {isLoading ? (
+              <>
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              </>
+            ) : (
+              <>
+                <Avatar className="h-10 w-10 ring-2 ring-emerald-500/20">
+                  <AvatarImage src={session?.user?.image || ""} />
+                  <AvatarFallback className="bg-emerald-950 text-emerald-200">
+                    {session?.user?.name?.[0].toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <span className="font-medium text-neutral-200">
+                    {session?.user?.name?.split(" ")[0]}
+                  </span>
+                  <span className="text-xs text-neutral-500">VJTI Student</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
 
       <Separator className="bg-neutral-800/50" />
 
@@ -79,7 +95,7 @@ export function Sidebar() {
         {isLoading ? (
           <Skeleton className="h-10 w-full rounded-lg" />
         ) : (
-          <Link href="/dashboard">
+          <Link href="/dashboard" onClick={onLinkClick}>
             <div className={cn(
               "flex items-center gap-3 rounded-lg px-5 py-3.5 text-sm font-medium transition-colors",
               pathname === "/dashboard"
@@ -91,6 +107,23 @@ export function Sidebar() {
             </div>
           </Link>
         )}
+        
+        {/* Events Link */}
+        {isLoading ? (
+          <Skeleton className="h-10 w-full rounded-lg" />
+        ) : (
+          <Link href="/dashboard/events" onClick={onLinkClick}>
+            <div className={cn(
+              "flex items-center gap-3 rounded-lg px-5 py-3.5 text-sm font-medium transition-colors",
+              pathname === "/dashboard/events"
+                ? "bg-emerald-500/10 text-emerald-400"
+                : "text-neutral-400 hover:bg-neutral-800/50 hover:text-neutral-200"
+            )}>
+              <Calendar className="h-4 w-4" />
+              <span>Events</span>
+            </div>
+          </Link>
+        )}
 
         {/* Navigation Links */}
         <div className="mt-6">
@@ -99,7 +132,7 @@ export function Sidebar() {
           </h3>
           <div className="space-y-1 mt-1">
             {navLinks.map(({ name, href, icon: Icon }) => (
-              <Link key={name} href={href}>
+              <Link key={name} href={href} onClick={onLinkClick}>
                 <div className={cn(
                   "flex items-center gap-3 rounded-lg px-5 py-3 text-sm font-medium transition-colors",
                   pathname === href
@@ -121,7 +154,7 @@ export function Sidebar() {
           </h3>
           <div className="space-y-1 mt-1">
             {clubs.map(({ name, href, icon: Icon }) => (
-              <Link key={name} href={href}>
+              <Link key={name} href={href} onClick={onLinkClick}>
                 <div className={cn(
                   "flex items-center gap-3 rounded-lg px-5 py-3 text-sm font-medium transition-colors",
                   pathname === href
@@ -146,7 +179,7 @@ export function Sidebar() {
               const isActive = pathname === `/dashboard/${domain.resources}`;
               const Icon = domain.icon;
               return (
-                <Link key={domain.name} href={`/dashboard/${domain.resources}`}>
+                <Link key={domain.name} href={`/dashboard/${domain.resources}`} onClick={onLinkClick}>
                   <div className={cn(
                     "flex items-center gap-3 rounded-lg px-5 py-3 text-sm font-medium transition-colors",
                     isActive
@@ -167,9 +200,11 @@ export function Sidebar() {
       <div className="p-8">
         <Separator className="bg-neutral-800/50 mb-6" />
         <p className="text-xs text-neutral-500 text-center">
-          © 2024 VJTI Resources
+          © {new Date().getFullYear()} VJTI Resources
         </p>
       </div>
-    </aside>
+
+      </aside>
+    </>
   );
 } 

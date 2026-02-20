@@ -1,26 +1,26 @@
 import Navbar from "@/components/Navbar";
-import { SectionHero } from "@/components/sections/SectionHero";
+import { HeroSection } from "@/components/sections/HeroSection";
 
 export default function ProjXPage() {
   const badges = [
-    { label: "Web Development", color: "bg-green-500/10 text-green-300" },
-    { label: "Mobile Apps", color: "bg-emerald-500/10 text-emerald-300" },
-    { label: "Cloud Computing", color: "bg-green-500/10 text-green-300" },
-    { label: "DevOps", color: "bg-emerald-500/10 text-emerald-300" },
-    { label: "System Design", color: "bg-green-500/10 text-green-300" },
-    { label: "Full Stack", color: "bg-emerald-500/10 text-emerald-300" },
+    { label: "Artificial Intelligence", className: "bg-green-500/10 text-green-300" },
+    { label: "Machine Learning", className: "bg-emerald-500/10 text-emerald-300" },
+    { label: "OpenCV", className: "bg-green-500/10 text-green-300" },
+    { label: "Open Source", className: "bg-emerald-500/10 text-emerald-300" },
+    { label: "Computer Vision", className: "bg-green-500/10 text-green-300" },
+    { label: "Deep Learning", className: "bg-emerald-500/10 text-emerald-300" },
   ];
 
   return (
     <main className="min-h-screen bg-neutral-950">
       <Navbar />
-      <SectionHero
+      <HeroSection
         title="Proj X"
-        subtitle="Where Code Meets Innovation"
-        description="Join a thriving community of developers who are passionate about crafting exceptional software solutions. From web applications to mobile experiences, we're building the digital future together."
+        subtitle="Intelligence Through Open Source"
+        description="Join a forward-thinking community dedicated to AI and Open Source innovation. From mastering Computer Vision with OpenCV to training advanced ML models, we are building the intelligent systems of tomorrow."
         badges={badges}
       />
       {/* Other sections will go here */}
     </main>
   );
-} 
+}
