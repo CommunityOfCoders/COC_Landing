@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
+    "build:cf": "npm run build && npx @opennextjs/cloudflare build",
     "start": "next start",
     "lint": "next lint",
     "changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 0",
@@ -58,6 +59,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.27.11",
     "@eslint/eslintrc": "^3.2.0",
+    "@opennextjs/cloudflare": "^1.16.5",
     "@types/eventsource": "^1.1.15",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.17.10",

@@ -1,6 +1,6 @@
 # Cloudflare Pages Deployment Guide
 
-This guide covers deploying the COC Website to Cloudflare Pages using `@cloudflare/next-on-pages`.
+This guide covers deploying the COC Website to Cloudflare Pages using OpenNext Cloudflare adapter.
 
 ## Prerequisites
 
@@ -59,17 +59,16 @@ For local testing with Wrangler:
 
 3. Run the development server:
    ```bash
-   npx wrangler pages dev -- npm run dev
+   npx wrangler dev
    ```
 
 ### 5. Deploy to Cloudflare Pages
 
-#### Option A: Direct Upload (Recommended for CI/CD)
+#### Option A: Direct Upload (Recommended)
 
 ```bash
-npm run build
-npx @cloudflare/next-on-pages@1
-npx wrangler pages deploy .vercel/output --project-name=coc-website
+npm run build:cf
+npx wrangler pages deploy .open-next --project-name=coc-website
 ```
 
 #### Option B: GitHub Integration
@@ -78,8 +77,8 @@ npx wrangler pages deploy .vercel/output --project-name=coc-website
 2. Navigate to **Pages** → **Create a project**
 3. Connect your GitHub repository
 4. Configure build settings:
-   - **Build command**: `npx @cloudflare/next-on-pages@1`
-   - **Build output directory**: `.vercel/output/static`
+   - **Build command**: `npm run build:cf`
+   - **Build output directory**: `.open-next`
    - **Root directory**: `/`
 5. Add all secrets in **Settings** → **Environment variables** → **Production** → **Add variable**
 
@@ -118,9 +117,9 @@ npx wrangler secret put <SECRET_NAME>
 
 ### Middleware Issues
 
-The middleware uses Supabase for authentication. Ensure:
-- `SUPABASE_SERVICE_ROLE_KEY` is correctly set as a secret
-- Your Supabase project is accessible from Cloudflare's edge network
+The middleware uses NextAuth for authentication. Ensure:
+- `NEXTAUTH_SECRET` is correctly set as a secret
+- Your authentication provider is properly configured
 
 ### Worker Size Limit Exceeded
 
@@ -135,7 +134,8 @@ If your build exceeds Cloudflare's worker size limit:
 ```
 ├── .dev.vars.example    # Template for local development variables
 ├── wrangler.toml        # Cloudflare Pages configuration
-├── next.config.mjs      # Next.js config (standalone output disabled for Cloudflare)
+├── open-next.config.ts  # OpenNext configuration
+├── next.config.mjs      # Next.js config
 └── middleware.ts        # Edge middleware for auth protection
 ```
 
@@ -146,14 +146,24 @@ If your build exceeds Cloudflare's worker size limit:
 ```toml
 name = "coc-website"
 compatibility_flags = ["nodejs_compat"]
-compatibility_date = "2025-01-01"
+compatibility_date = "2026-02-01"
 
 [build]
-command = "npx @cloudflare/next-on-pages@1"
+command = "npm run build && npx @opennextjs/cloudflare build"
 
 [vars]
 NODE_VERSION = "22"
 NEXT_OUTPUT_STANDALONE = "false"
+```
+
+### open-next.config.ts
+
+```typescript
+import { defineCloudflareConfig } from "@opennextjs/cloudflare";
+
+export default defineCloudflareConfig({
+  // Default configuration for Cloudflare Pages
+});
 ```
 
 ### next.config.mjs
@@ -174,10 +184,13 @@ npx wrangler tail
 
 # Open project in browser
 npx wrangler pages project open coc-website
+
+# Local development
+npx wrangler dev
 ```
 
 ## Additional Resources
 
 - [Cloudflare Pages Documentation](https://developers.cloudflare.com/pages/)
-- [next-on-pages GitHub](https://github.com/cloudflare/next-on-pages)
+- [OpenNext Cloudflare](https://opennext.js.org/cloudflare)
 - [Wrangler CLI Docs](https://developers.cloudflare.com/workers/wrangler/)

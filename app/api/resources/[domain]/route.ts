@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import resources from '@/data/resources.json';
 
-export const runtime = 'edge';
+// Removed edge runtime for OpenNext Cloudflare compatibility
+// export const runtime = 'edge';
 
 
 export async function GET(
