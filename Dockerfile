@@ -25,6 +25,15 @@ ENV NODE_ENV=production
 ENV HUSKY=0
 ENV NEXT_OUTPUT_STANDALONE=true
 
+# Required for build-time environment variable validation
+# These values are validated at runtime and can be placeholders for build
+ENV NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+ENV SUPABASE_SERVICE_ROLE_KEY=placeholder_key_for_build_only
+ENV GOOGLE_CLIENT_ID=placeholder_for_build
+ENV GOOGLE_CLIENT_SECRET=placeholder_for_build
+ENV NEXTAUTH_SECRET=placeholder_for_build
+ENV JWT_SECRET=placeholder_for_build
+
 # Build application
 RUN npm run build
 
