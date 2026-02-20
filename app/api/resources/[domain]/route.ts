@@ -7,10 +7,10 @@ export const runtime = 'edge';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { domain: string } }
+  { params }: { params: Promise<{ domain: string }> }
 ) {
   try {
-    const domain = params.domain;
+    const { domain } = await params;
     const domainResources = resources[domain as keyof typeof resources] || [];
 
     return NextResponse.json(domainResources);

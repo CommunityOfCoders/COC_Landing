@@ -72,9 +72,11 @@ export const authOptions: NextAuthOptions = {
       }
       return false;
     },
-    async jwt({ token, user, trigger }) {
-      // Fetch user's admin status from Supabase on sign in or session update
-      if (token.email) {
+    async jwt({ token, user, trigger, session }) {
+      // Fetch user's admin status from Supabase only on initial sign in
+      // Subsequent requests will use the cached value in the JWT token
+      if (user) {
+        // Initial sign in - fetch admin status
         try {
           const { data: userData } = await supabaseAdmin
             .from('users')
@@ -87,8 +89,15 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (error) {
           console.error('Error fetching user admin status:', error);
+          token.isAdmin = false;
         }
       }
+
+      // Handle session updates (e.g., when admin status changes)
+      if (session && trigger === 'update') {
+        token.isAdmin = session.isAdmin;
+      }
+
       return token;
     },
     async session({ session, token }) {
