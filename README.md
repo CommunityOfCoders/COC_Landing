@@ -27,8 +27,8 @@ Open [http://localhost:3000](http://localhost:3000) to view the project.
 ## 🛠️ Development Setup
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- npm (v9 or higher)
+- Node.js (v22 or higher)
+- npm (v10 or higher)
 - Docker (optional)
 
 ### Environment Setup
