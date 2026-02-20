@@ -1,10 +1,13 @@
 name = "coc-website"
-main = "app/_worker.js"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2025-01-01"
 
+[build]
+command = "npx @cloudflare/next-on-pages@1"
+
 [vars]
-NODE_VERSION = "22"
+NODE_VERSION = "20"
+NEXT_OUTPUT_STANDALONE = "false"
 
 
 # Secrets (add via: npx wrangler secret put <NAME>)

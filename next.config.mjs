@@ -3,7 +3,9 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 const nextConfig = {
-  output: 'standalone',
+  // Use standalone output only for Docker deployments
+  // Cloudflare Pages uses its own build process
+  output: process.env.NEXT_OUTPUT_STANDALONE === 'true' ? 'standalone' : undefined,
   eslint: {
     // Prevent lint errors from failing the production build. Team can fix lint issues separately.
     ignoreDuringBuilds: true,

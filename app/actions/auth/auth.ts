@@ -1,4 +1,4 @@
-import {supabaseAdmin} from '@/lib/supabase-admin';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 

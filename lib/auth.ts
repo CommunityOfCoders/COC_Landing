@@ -26,10 +26,10 @@ export const authOptions: NextAuthOptions = {
           return false;
         }
         //extract dep and year from email
-        const dep = profile.email.split('@')[1].split('.')[0]; 
-        const match = profile.email.match(/_?b(\d+)@/); 
+        const dep = profile.email.split('@')[1].split('.')[0];
+        const match = profile.email.match(/_?b(\d+)@/);
         const year = match ? parseInt(match[1], 10) + 2000 : null;
-        
+
         // console.log(`Extracted department: ${dep}, year: ${year} from email: ${profile.email}`);
         // Sync user to Supabase
         try {
@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
                 name: profile.name || user.name,
                 picture: profile.image || user.image,
                 branch:dep,
-                year: year, 
+                year: year,
                 is_admin: 0, // Explicitly set to 0, can only be changed via Supabase
               }]);
           } else {
@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
                 name: profile.name || user.name,
                 picture: profile.image || user.image,
                 branch:dep,
-                year: year, 
+                year: year,
               })
               .eq('email', profile.email);
           }
@@ -104,7 +104,7 @@ export const authOptions: NextAuthOptions = {
       if (url.includes('/api/auth/callback')) {
         return baseUrl + "/dashboard";
       }
-      
+
       // Handle other redirects
       if (url.startsWith(baseUrl)) return url;
       else if (url.startsWith("/")) return new URL(url, baseUrl).toString();

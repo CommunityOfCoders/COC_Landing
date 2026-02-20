@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:22-alpine AS deps
+FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Install dependencies needed for build
@@ -12,7 +12,7 @@ COPY package*.json ./
 RUN npm ci --ignore-scripts
 
 # Stage 2: Builder
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -23,12 +23,22 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV HUSKY=0
+ENV NEXT_OUTPUT_STANDALONE=true
+
+# Required for build-time environment variable validation
+# These values are validated at runtime and can be placeholders for build
+ENV NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+ENV SUPABASE_SERVICE_ROLE_KEY=placeholder_key_for_build_only
+ENV GOOGLE_CLIENT_ID=placeholder_for_build
+ENV GOOGLE_CLIENT_SECRET=placeholder_for_build
+ENV NEXTAUTH_SECRET=placeholder_for_build
+ENV JWT_SECRET=placeholder_for_build
 
 # Build application
 RUN npm run build
 
 # Stage 3: Production image
-FROM node:22-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Set environment variables
