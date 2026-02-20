@@ -6,10 +6,6 @@ const nextConfig = {
   // Use standalone output only for Docker deployments
   // Cloudflare Pages uses its own build process
   output: process.env.NEXT_OUTPUT_STANDALONE === 'true' ? 'standalone' : undefined,
-  eslint: {
-    // Prevent lint errors from failing the production build. Team can fix lint issues separately.
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -26,11 +22,10 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
+  // Turbopack configuration (Next.js 16+)
+  // Empty object to silence warning - webpack config is used for this project
+  turbopack: {},
+  // Webpack configuration (for backwards compatibility)
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

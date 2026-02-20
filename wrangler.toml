@@ -1,9 +1,9 @@
 name = "coc-website"
 compatibility_flags = ["nodejs_compat"]
-compatibility_date = "2025-01-01"
+compatibility_date = "2026-02-01"
 
 [build]
-command = "npx @cloudflare/next-on-pages@1"
+command = "npx @cloudflare/next-on-pages@1 --webpack"
 
 [vars]
 NODE_VERSION = "20"
