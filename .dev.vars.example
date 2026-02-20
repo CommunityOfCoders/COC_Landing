@@ -1,0 +1,18 @@
+# Cloudflare Pages Development Variables
+# Copy this file to .dev.vars and fill in your values
+# DO NOT commit .dev.vars to git
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# NextAuth
+NEXTAUTH_SECRET=your_nextauth_secret_here
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+
+# JWT
+JWT_SECRET=your_jwt_secret_here

@@ -1,5 +1,5 @@
 # Stage 1: Dependencies
-FROM node:22-alpine AS deps
+FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Install dependencies needed for build
@@ -12,7 +12,7 @@ COPY package*.json ./
 RUN npm ci --ignore-scripts
 
 # Stage 2: Builder
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -23,12 +23,13 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV HUSKY=0
+ENV NEXT_OUTPUT_STANDALONE=true
 
 # Build application
 RUN npm run build
 
 # Stage 3: Production image
-FROM node:22-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Set environment variables
