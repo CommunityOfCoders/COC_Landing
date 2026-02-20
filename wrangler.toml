@@ -6,7 +6,7 @@ compatibility_date = "2026-02-01"
 command = "npx @cloudflare/next-on-pages@1 --webpack"
 
 [vars]
-NODE_VERSION = "20"
+NODE_VERSION = "22"
 NEXT_OUTPUT_STANDALONE = "false"
 
 

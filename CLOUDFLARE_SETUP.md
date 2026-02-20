@@ -4,7 +4,7 @@ This guide covers deploying the COC Website to Cloudflare Pages using `@cloudfla
 
 ## Prerequisites
 
-- Node.js >= 20.0.0 (check with `node -v`)
+- Node.js >= 22.0.0 (check with `node -v`)
 - Cloudflare account
 - Wrangler CLI installed (`npm install -g wrangler`)
 
@@ -91,17 +91,17 @@ For non-secret variables, add them in the Cloudflare Pages dashboard:
 2. Navigate to **Environment variables**
 3. Add:
    - `NEXT_OUTPUT_STANDALONE` = `false`
-   - `NODE_VERSION` = `20`
+   - `NODE_VERSION` = `22`
 
 ## Troubleshooting
 
 ### Build Fails with "Unsupported engine"
 
-Ensure you're using Node.js >= 20.0.0:
+Ensure you're using Node.js >= 22.0.0:
 
 ```bash
-node -v  # Should show v20.x.x or higher
-nvm use 20  # If using nvm
+node -v  # Should show v22.x.x or higher
+nvm use 22  # If using nvm
 ```
 
 ### Missing Secrets
@@ -152,7 +152,7 @@ compatibility_date = "2025-01-01"
 command = "npx @cloudflare/next-on-pages@1"
 
 [vars]
-NODE_VERSION = "20"
+NODE_VERSION = "22"
 NEXT_OUTPUT_STANDALONE = "false"
 ```
 
